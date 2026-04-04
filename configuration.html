@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration — Morgenruf Docs</title>
+  <meta name="description" content="Configure your Morgenruf standup bot via DM commands and environment variables." />
+  <link rel="stylesheet" href="assets/docs.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-icon">M</div>
+    <span class="logo-name">Morgenruf</span>
+    <span class="logo-docs">/ Docs</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <a href="https://morgenruf.dev" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+    <span>morgenruf.dev</span>
+  </a>
+</header>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Documentation</div>
+    <ul class="sidebar-nav">
+      <li><a href="index.html">
+        <span class="nav-icon">🏠</span> Welcome
+      </a></li>
+      <li><a href="getting-started.html">
+        <span class="nav-icon">🚀</span> Getting Started
+      </a></li>
+      <li><a href="configuration.html" class="active">
+        <span class="nav-icon">⚙️</span> Configuration
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Self Hosting</div>
+    <ul class="sidebar-nav">
+      <li><a href="self-hosting.html">
+        <span class="nav-icon">🐳</span> Docker
+      </a></li>
+      <li><a href="helm.html">
+        <span class="nav-icon">☸️</span> Kubernetes / Helm
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Help</div>
+    <ul class="sidebar-nav">
+      <li><a href="faq.html">
+        <span class="nav-icon">💬</span> FAQ
+      </a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="docs-main">
+    <article class="docs-content">
+
+      <h1>Configuration</h1>
+      <p class="page-subtitle">Configure Morgenruf by sending it direct messages. All settings are persisted per workspace.</p>
+
+      <h2 id="dm-commands">DM Commands</h2>
+      <p>Open a DM with <strong>@Morgenruf</strong> in Slack and send any of the following commands. Changes take effect immediately.</p>
+
+      <h3 id="set-channel">Set the standup channel</h3>
+      <p>The channel where Morgenruf posts the daily standup summary.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-plaintext">config channel #standup</code></pre>
+        <span class="code-lang">slack dm</span>
+      </div>
+      <p>Replace <code>#standup</code> with your actual channel name. Make sure you've also run <code>/invite @Morgenruf</code> in that channel so it can post there.</p>
+
+      <h3 id="set-time">Set the standup time</h3>
+      <p>The time at which Morgenruf DMs team members to collect their standup answers.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-plaintext">config time 09:00</code></pre>
+        <span class="code-lang">slack dm</span>
+      </div>
+      <p>Uses 24-hour format. The time is interpreted in the workspace's configured timezone (see below).</p>
+
+      <h3 id="set-timezone">Set the timezone</h3>
+      <p>Standups are scheduled in this timezone. Use any <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones" target="_blank" rel="noopener">IANA timezone name</a>.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-plaintext">config timezone America/New_York</code></pre>
+        <span class="code-lang">slack dm</span>
+      </div>
+      <p>Examples: <code>Europe/Berlin</code>, <code>Asia/Tokyo</code>, <code>America/Los_Angeles</code>, <code>UTC</code></p>
+
+      <h3 id="set-days">Set active days</h3>
+      <p>Choose which days of the week Morgenruf should prompt for standups. Defaults to Monday through Friday.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-plaintext">config days mon,tue,wed,thu,fri</code></pre>
+        <span class="code-lang">slack dm</span>
+      </div>
+      <p>Valid values: <code>mon</code>, <code>tue</code>, <code>wed</code>, <code>thu</code>, <code>fri</code>, <code>sat</code>, <code>sun</code>. Separate multiple days with commas.</p>
+
+      <h3 id="customize-questions">Customize standup questions</h3>
+      <p>By default Morgenruf asks three questions. You can replace them with anything your team prefers.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-plaintext">config questions</code></pre>
+        <span class="code-lang">slack dm</span>
+      </div>
+      <p>Morgenruf will reply with an interactive prompt to enter up to three questions. The defaults are:</p>
+      <ol>
+        <li>What did you work on yesterday?</li>
+        <li>What are you working on today?</li>
+        <li>Any blockers or anything the team should know?</li>
+      </ol>
+
+      <h2 id="example-conversation">Example Setup Conversation</h2>
+      <p>Here's what a typical first-time configuration looks like when DMing Morgenruf:</p>
+
+      <div class="slack-chat">
+        <!-- Bot welcome -->
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta">
+              <span class="slack-name bot-name">Morgenruf</span>
+              <span class="slack-time">9:02 AM</span>
+            </div>
+            <div class="slack-text">
+              👋 Hey! Thanks for installing Morgenruf. I'm your async standup bot.<br><br>
+              Let's get you set up. Send me <code>config channel #your-channel</code> to tell me where to post summaries.
+            </div>
+          </div>
+        </div>
+
+        <!-- User sets channel -->
+        <div class="slack-message">
+          <div class="slack-avatar user">Y</div>
+          <div class="slack-body">
+            <div class="slack-meta">
+              <span class="slack-name">You</span>
+              <span class="slack-time">9:03 AM</span>
+            </div>
+            <div class="slack-text">config channel #engineering</div>
+          </div>
+        </div>
+
+        <!-- Bot confirms channel -->
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta">
+              <span class="slack-name bot-name">Morgenruf</span>
+              <span class="slack-time">9:03 AM</span>
+            </div>
+            <div class="slack-text">
+              ✅ Standup summaries will be posted to <code>#engineering</code>.<br>
+              Make sure to <code>/invite @Morgenruf</code> there if you haven't already.
+            </div>
+          </div>
+        </div>
+
+        <!-- User sets timezone -->
+        <div class="slack-message">
+          <div class="slack-avatar user">Y</div>
+          <div class="slack-body">
+            <div class="slack-meta">
+              <span class="slack-name">You</span>
+              <span class="slack-time">9:04 AM</span>
+            </div>
+            <div class="slack-text">config timezone Europe/Berlin</div>
+          </div>
+        </div>
+
+        <!-- Bot confirms timezone -->
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta">
+              <span class="slack-name bot-name">Morgenruf</span>
+              <span class="slack-time">9:04 AM</span>
+            </div>
+            <div class="slack-text">✅ Timezone set to <code>Europe/Berlin</code>.</div>
+          </div>
+        </div>
+
+        <!-- User sets time -->
+        <div class="slack-message">
+          <div class="slack-avatar user">Y</div>
+          <div class="slack-body">
+            <div class="slack-meta">
+              <span class="slack-name">You</span>
+              <span class="slack-time">9:05 AM</span>
+            </div>
+            <div class="slack-text">config time 09:30</div>
+          </div>
+        </div>
+
+        <!-- Bot confirms time -->
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta">
+              <span class="slack-name bot-name">Morgenruf</span>
+              <span class="slack-time">9:05 AM</span>
+            </div>
+            <div class="slack-text">
+              ✅ Standup reminders will go out at <strong>09:30 Europe/Berlin</strong> on weekdays.<br><br>
+              You're all set! Want to run a test standup now? Just say <code>@Morgenruf standup</code> in any channel I'm in.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="environment-variables">Environment Variables</h2>
+      <p>If you're <a href="self-hosting.html">self-hosting</a>, these environment variables control Morgenruf's behavior. Set them in your <code>.env</code> file or your container's environment.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Required</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>SLACK_CLIENT_ID</code></td>
+            <td><span class="badge badge-required">Required</span></td>
+            <td>Your Slack app's Client ID. Found at <a href="https://api.slack.com/apps" target="_blank">api.slack.com/apps</a>.</td>
+          </tr>
+          <tr>
+            <td><code>SLACK_CLIENT_SECRET</code></td>
+            <td><span class="badge badge-required">Required</span></td>
+            <td>Your Slack app's Client Secret. Keep this secret — do not commit to source control.</td>
+          </tr>
+          <tr>
+            <td><code>SLACK_SIGNING_SECRET</code></td>
+            <td><span class="badge badge-required">Required</span></td>
+            <td>Used to verify that incoming requests come from Slack. Found in app settings under <em>Basic Information</em>.</td>
+          </tr>
+          <tr>
+            <td><code>DATABASE_URL</code></td>
+            <td><span class="badge badge-required">Required</span></td>
+            <td>PostgreSQL connection string, e.g. <code>postgresql://user:pass@host:5432/morgenruf</code></td>
+          </tr>
+          <tr>
+            <td><code>APP_URL</code></td>
+            <td><span class="badge badge-required">Required</span></td>
+            <td>Publicly accessible URL for this instance, e.g. <code>https://api.morgenruf.dev</code>. Used to construct OAuth redirect URIs.</td>
+          </tr>
+          <tr>
+            <td><code>RESEND_API_KEY</code></td>
+            <td><span class="badge badge-optional">Optional</span></td>
+            <td>API key for <a href="https://resend.com" target="_blank">Resend</a> to send welcome emails. If omitted, emails are skipped.</td>
+          </tr>
+          <tr>
+            <td><code>PORT</code></td>
+            <td><span class="badge badge-optional">Optional</span></td>
+            <td>HTTP port to listen on. Defaults to <code>3000</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout warning">
+        <span class="callout-icon">⚠️</span>
+        <p><strong>Keep your secrets safe.</strong> Never commit <code>SLACK_CLIENT_SECRET</code> or <code>SLACK_SIGNING_SECRET</code> to source control. Use a <code>.env</code> file (gitignored) or a secrets manager.</p>
+      </div>
+
+      <h2 id="help-command">Help Command</h2>
+      <p>At any time you can send Morgenruf a DM with just <code>help</code> to see a list of all available commands:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-plaintext">help</code></pre>
+        <span class="code-lang">slack dm</span>
+      </div>
+
+    </article>
+  </main>
+
+  <!-- ON THIS PAGE -->
+  <aside class="on-this-page">
+    <div class="on-this-page-label">On this page</div>
+    <nav>
+      <ul>
+        <li><a href="#dm-commands">DM Commands</a></li>
+        <li><a href="#set-channel" class="h3">Set channel</a></li>
+        <li><a href="#set-time" class="h3">Set time</a></li>
+        <li><a href="#set-timezone" class="h3">Set timezone</a></li>
+        <li><a href="#set-days" class="h3">Set active days</a></li>
+        <li><a href="#customize-questions" class="h3">Custom questions</a></li>
+        <li><a href="#example-conversation">Example Conversation</a></li>
+        <li><a href="#environment-variables">Environment Variables</a></li>
+        <li><a href="#help-command">Help Command</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+</div>
+
+<script>
+  hljs.highlightAll();
+  const btn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+  }
+  btn.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+</script>
+</body>
+</html>

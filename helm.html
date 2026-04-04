@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kubernetes / Helm — Morgenruf Docs</title>
+  <meta name="description" content="Deploy Morgenruf to Kubernetes using the official Helm chart." />
+  <link rel="stylesheet" href="assets/docs.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-icon">M</div>
+    <span class="logo-name">Morgenruf</span>
+    <span class="logo-docs">/ Docs</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <a href="https://morgenruf.dev" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+    <span>morgenruf.dev</span>
+  </a>
+</header>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Documentation</div>
+    <ul class="sidebar-nav">
+      <li><a href="index.html">
+        <span class="nav-icon">🏠</span> Welcome
+      </a></li>
+      <li><a href="getting-started.html">
+        <span class="nav-icon">🚀</span> Getting Started
+      </a></li>
+      <li><a href="configuration.html">
+        <span class="nav-icon">⚙️</span> Configuration
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Self Hosting</div>
+    <ul class="sidebar-nav">
+      <li><a href="self-hosting.html">
+        <span class="nav-icon">🐳</span> Docker
+      </a></li>
+      <li><a href="helm.html" class="active">
+        <span class="nav-icon">☸️</span> Kubernetes / Helm
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Help</div>
+    <ul class="sidebar-nav">
+      <li><a href="faq.html">
+        <span class="nav-icon">💬</span> FAQ
+      </a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="docs-main">
+    <article class="docs-content">
+
+      <h1>Kubernetes / Helm</h1>
+      <p class="page-subtitle">Deploy Morgenruf to any Kubernetes cluster using the official Helm chart.</p>
+
+      <h2 id="prerequisites">Prerequisites</h2>
+      <ul>
+        <li>A running <strong>Kubernetes</strong> cluster (any cloud or on-prem)</li>
+        <li><strong>Helm 3</strong> installed and configured against your cluster</li>
+        <li>A <a href="https://api.slack.com/apps" target="_blank" rel="noopener">Slack app</a> with Client ID, Client Secret, and Signing Secret ready</li>
+        <li>Either a PostgreSQL instance or plan to use the bundled one (enabled by default)</li>
+      </ul>
+
+      <h2 id="add-helm-repo">Add the Helm Repository</h2>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">helm repo add morgenruf https://charts.morgenruf.dev
+helm repo update</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+      <p>Confirm the chart is available:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">helm search repo morgenruf</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+
+      <h2 id="install">Install</h2>
+      <p>Install with your Slack credentials passed directly via <code>--set</code> flags:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">helm install morgenruf morgenruf/morgenruf \
+  --namespace morgenruf \
+  --create-namespace \
+  --set slack.clientId="YOUR_CLIENT_ID" \
+  --set slack.clientSecret="YOUR_CLIENT_SECRET" \
+  --set slack.signingSecret="YOUR_SIGNING_SECRET" \
+  --set postgresql.enabled=true</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <p>For production deployments, store your secrets in Kubernetes Secrets or a tool like Vault rather than passing them as <code>--set</code> values. Use <code>existingSecret</code> values to reference pre-created secrets.</p>
+      </div>
+
+      <h3 id="install-with-values-file">Install with a values file</h3>
+      <p>For a more maintainable setup, create a <code>values.yaml</code> file:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-yaml">slack:
+  clientId: "YOUR_CLIENT_ID"
+  clientSecret: "YOUR_CLIENT_SECRET"
+  signingSecret: "YOUR_SIGNING_SECRET"
+
+postgresql:
+  enabled: true
+  auth:
+    database: morgenruf
+    password: "your-strong-password"
+
+ingress:
+  enabled: true
+  host: morgenruf.your-domain.com
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  tls: true
+
+replicaCount: 2
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi</code></pre>
+        <span class="code-lang">values.yaml</span>
+      </div>
+      <p>Then install with:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">helm install morgenruf morgenruf/morgenruf \
+  --namespace morgenruf \
+  --create-namespace \
+  -f values.yaml</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+
+      <h2 id="values-reference">Values Reference</h2>
+      <p>All configurable values for the Helm chart:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>replicaCount</code></td>
+            <td><code>1</code></td>
+            <td>Number of pod replicas. Use 2+ for high availability.</td>
+          </tr>
+          <tr>
+            <td><code>image.repository</code></td>
+            <td><code>ghcr.io/morgenruf/morgenruf</code></td>
+            <td>Container image repository.</td>
+          </tr>
+          <tr>
+            <td><code>image.tag</code></td>
+            <td><code>latest</code></td>
+            <td>Image tag. Pin to a specific version for production (e.g. <code>v1.2.0</code>).</td>
+          </tr>
+          <tr>
+            <td><code>image.pullPolicy</code></td>
+            <td><code>IfNotPresent</code></td>
+            <td>Kubernetes image pull policy.</td>
+          </tr>
+          <tr>
+            <td><code>slack.clientId</code></td>
+            <td><code>""</code></td>
+            <td>Slack app Client ID.</td>
+          </tr>
+          <tr>
+            <td><code>slack.clientSecret</code></td>
+            <td><code>""</code></td>
+            <td>Slack app Client Secret.</td>
+          </tr>
+          <tr>
+            <td><code>slack.signingSecret</code></td>
+            <td><code>""</code></td>
+            <td>Slack Signing Secret for request verification.</td>
+          </tr>
+          <tr>
+            <td><code>postgresql.enabled</code></td>
+            <td><code>true</code></td>
+            <td>Deploy a bundled PostgreSQL instance. Set to <code>false</code> to use an external DB.</td>
+          </tr>
+          <tr>
+            <td><code>postgresql.auth.database</code></td>
+            <td><code>morgenruf</code></td>
+            <td>PostgreSQL database name.</td>
+          </tr>
+          <tr>
+            <td><code>postgresql.auth.username</code></td>
+            <td><code>morgenruf</code></td>
+            <td>PostgreSQL username.</td>
+          </tr>
+          <tr>
+            <td><code>postgresql.auth.password</code></td>
+            <td><code>""</code></td>
+            <td>PostgreSQL password. <strong>Always set this.</strong></td>
+          </tr>
+          <tr>
+            <td><code>externalDatabase.url</code></td>
+            <td><code>""</code></td>
+            <td>Full PostgreSQL connection string when <code>postgresql.enabled=false</code>.</td>
+          </tr>
+          <tr>
+            <td><code>ingress.enabled</code></td>
+            <td><code>false</code></td>
+            <td>Enable Kubernetes Ingress resource.</td>
+          </tr>
+          <tr>
+            <td><code>ingress.host</code></td>
+            <td><code>""</code></td>
+            <td>Hostname for the ingress rule (e.g. <code>morgenruf.example.com</code>).</td>
+          </tr>
+          <tr>
+            <td><code>ingress.tls</code></td>
+            <td><code>false</code></td>
+            <td>Enable TLS for the ingress. Requires a cert-manager or pre-created secret.</td>
+          </tr>
+          <tr>
+            <td><code>resources.limits.cpu</code></td>
+            <td><code>500m</code></td>
+            <td>CPU resource limit.</td>
+          </tr>
+          <tr>
+            <td><code>resources.limits.memory</code></td>
+            <td><code>512Mi</code></td>
+            <td>Memory resource limit.</td>
+          </tr>
+          <tr>
+            <td><code>resources.requests.cpu</code></td>
+            <td><code>100m</code></td>
+            <td>CPU resource request.</td>
+          </tr>
+          <tr>
+            <td><code>resources.requests.memory</code></td>
+            <td><code>128Mi</code></td>
+            <td>Memory resource request.</td>
+          </tr>
+          <tr>
+            <td><code>serviceAccount.create</code></td>
+            <td><code>true</code></td>
+            <td>Create a Kubernetes ServiceAccount for the pod.</td>
+          </tr>
+          <tr>
+            <td><code>podAnnotations</code></td>
+            <td><code>{}</code></td>
+            <td>Annotations to add to the bot pod(s).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="upgrade">Upgrade</h2>
+      <p>To upgrade to a newer chart or image version:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">helm repo update
+helm upgrade morgenruf morgenruf/morgenruf \
+  --namespace morgenruf \
+  -f values.yaml</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+      <p>Helm will perform a rolling update, keeping at least one pod available during the transition.</p>
+
+      <h2 id="uninstall">Uninstall</h2>
+      <p>To remove Morgenruf from your cluster:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">helm uninstall morgenruf --namespace morgenruf</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+      <div class="callout warning">
+        <span class="callout-icon">⚠️</span>
+        <p>This will delete all Morgenruf resources but will <strong>not</strong> delete the namespace or PersistentVolumeClaims (to protect your data). Delete those manually if needed.</p>
+      </div>
+
+      <h2 id="external-postgres">Using an External PostgreSQL</h2>
+      <p>To connect to an existing PostgreSQL instance instead of the bundled one:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-yaml">postgresql:
+  enabled: false
+
+externalDatabase:
+  url: "postgresql://user:password@your-db-host:5432/morgenruf"</code></pre>
+        <span class="code-lang">values.yaml</span>
+      </div>
+      <p>Make sure the database exists and the user has <code>CREATE</code> privileges (needed for migrations).</p>
+
+    </article>
+  </main>
+
+  <!-- ON THIS PAGE -->
+  <aside class="on-this-page">
+    <div class="on-this-page-label">On this page</div>
+    <nav>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#add-helm-repo">Add Helm Repo</a></li>
+        <li><a href="#install">Install</a></li>
+        <li><a href="#install-with-values-file" class="h3">With values file</a></li>
+        <li><a href="#values-reference">Values Reference</a></li>
+        <li><a href="#upgrade">Upgrade</a></li>
+        <li><a href="#uninstall">Uninstall</a></li>
+        <li><a href="#external-postgres">External PostgreSQL</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+</div>
+
+<script>
+  hljs.highlightAll();
+  const btn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+  }
+  btn.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+</script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Self Hosting — Morgenruf Docs</title>
+  <meta name="description" content="Run Morgenruf on your own infrastructure with Docker Compose." />
+  <link rel="stylesheet" href="assets/docs.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-icon">M</div>
+    <span class="logo-name">Morgenruf</span>
+    <span class="logo-docs">/ Docs</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <a href="https://morgenruf.dev" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+    <span>morgenruf.dev</span>
+  </a>
+</header>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Documentation</div>
+    <ul class="sidebar-nav">
+      <li><a href="index.html">
+        <span class="nav-icon">🏠</span> Welcome
+      </a></li>
+      <li><a href="getting-started.html">
+        <span class="nav-icon">🚀</span> Getting Started
+      </a></li>
+      <li><a href="configuration.html">
+        <span class="nav-icon">⚙️</span> Configuration
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Self Hosting</div>
+    <ul class="sidebar-nav">
+      <li><a href="self-hosting.html" class="active">
+        <span class="nav-icon">🐳</span> Docker
+      </a></li>
+      <li><a href="helm.html">
+        <span class="nav-icon">☸️</span> Kubernetes / Helm
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Help</div>
+    <ul class="sidebar-nav">
+      <li><a href="faq.html">
+        <span class="nav-icon">💬</span> FAQ
+      </a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="docs-main">
+    <article class="docs-content">
+
+      <h1>Self Hosting</h1>
+      <p class="page-subtitle">Run Morgenruf on your own servers with Docker Compose. Full control, no vendor lock-in.</p>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ️</span>
+        <p>Prefer Kubernetes? See the <a href="helm.html">Helm chart guide</a> for a production-ready cluster deployment.</p>
+      </div>
+
+      <h2 id="prerequisites">Prerequisites</h2>
+      <ul>
+        <li><strong>Docker</strong> 24+ and <strong>Docker Compose</strong> v2+ installed on your host</li>
+        <li>A publicly accessible domain/URL (Slack must be able to reach your instance to send events)</li>
+        <li>A <a href="https://api.slack.com/apps" target="_blank" rel="noopener">Slack app</a> with the correct scopes and redirect URLs configured</li>
+      </ul>
+
+      <h2 id="create-slack-app">Create a Slack App</h2>
+      <p>Before running Morgenruf you need to create a Slack app to get your credentials:</p>
+      <ol>
+        <li>Go to <a href="https://api.slack.com/apps" target="_blank" rel="noopener">api.slack.com/apps</a> and click <strong>Create New App → From Manifest</strong>.</li>
+        <li>Paste the manifest from the <a href="https://github.com/morgenruf/morgenruf" target="_blank" rel="noopener">GitHub repo</a> (in <code>slack-manifest.yaml</code>), replacing <code>APP_URL</code> with your public URL.</li>
+        <li>Under <strong>Basic Information</strong>, copy your <strong>Client ID</strong>, <strong>Client Secret</strong>, and <strong>Signing Secret</strong>.</li>
+      </ol>
+
+      <h2 id="docker-compose">Docker Compose Setup</h2>
+      <p>Create a directory for Morgenruf and add a <code>docker-compose.yml</code>:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-yaml">version: '3.8'
+services:
+  bot:
+    image: ghcr.io/morgenruf/morgenruf:latest
+    env_file: .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: morgenruf
+      POSTGRES_USER: morgenruf
+      POSTGRES_PASSWORD: changeme
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:</code></pre>
+        <span class="code-lang">docker-compose.yml</span>
+      </div>
+
+      <div class="callout warning">
+        <span class="callout-icon">⚠️</span>
+        <p>Change <code>POSTGRES_PASSWORD</code> to a strong, unique password before running in production. Use a password manager or <code>openssl rand -base64 32</code> to generate one.</p>
+      </div>
+
+      <h2 id="env-setup">Environment Setup</h2>
+      <p>Copy the example env file and fill in your values:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">curl -o .env https://raw.githubusercontent.com/morgenruf/morgenruf/main/.env.example</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+      <p>Open <code>.env</code> in your editor and set the required values:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash"># Slack credentials (from api.slack.com/apps)
+SLACK_CLIENT_ID=your_client_id
+SLACK_CLIENT_SECRET=your_client_secret
+SLACK_SIGNING_SECRET=your_signing_secret
+
+# Database (matches docker-compose.yml postgres service)
+DATABASE_URL=postgresql://morgenruf:changeme@postgres:5432/morgenruf
+
+# Public URL of this instance (no trailing slash)
+APP_URL=https://morgenruf.your-domain.com
+
+# Optional: Resend API key for welcome emails
+# RESEND_API_KEY=re_...
+
+# Optional: override the HTTP port (default 3000)
+# PORT=3000</code></pre>
+        <span class="code-lang">.env</span>
+      </div>
+
+      <h2 id="start">Start Morgenruf</h2>
+      <p>Pull the latest image and start all services in the background:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">docker compose pull
+docker compose up -d</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+
+      <h2 id="run-migrations">Run Database Migrations</h2>
+      <p>On first run (and after upgrades), apply the database schema:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">docker exec morgenruf-bot python -m src.db migrate</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+      <p>The container name defaults to <code>morgenruf-bot</code> — adjust if you renamed it in <code>docker-compose.yml</code>.</p>
+
+      <h2 id="verify">Verify the Installation</h2>
+      <p>Check the health endpoint to confirm the bot is running:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">curl http://localhost:3000/healthz</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+      <p>A healthy instance returns:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{"status": "ok", "db": "connected"}</code></pre>
+        <span class="code-lang">json</span>
+      </div>
+      <p>Check logs if something looks wrong:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">docker compose logs -f bot</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+
+      <h2 id="ngrok">Local Development with Ngrok</h2>
+      <p>Slack requires a publicly accessible HTTPS URL to deliver events. For local development, use <a href="https://ngrok.com" target="_blank" rel="noopener">ngrok</a> to create a tunnel:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash"># Install ngrok from https://ngrok.com, then:
+ngrok http 3000</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+      <p>Copy the <code>https://xxxx.ngrok-free.app</code> URL ngrok gives you, then:</p>
+      <ol>
+        <li>Set <code>APP_URL</code> in your <code>.env</code> to this URL</li>
+        <li>Update your Slack app's <strong>Event Subscriptions</strong> Request URL to <code>https://xxxx.ngrok-free.app/slack/events</code></li>
+        <li>Update the <strong>OAuth Redirect URLs</strong> to <code>https://xxxx.ngrok-free.app/slack/oauth_redirect</code></li>
+        <li>Restart the bot: <code>docker compose restart bot</code></li>
+      </ol>
+
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <p>The free tier of ngrok generates a new URL each time you restart it. For persistent local dev URLs, use a paid ngrok plan or a static reserved domain.</p>
+      </div>
+
+      <h2 id="upgrading">Upgrading</h2>
+      <p>To upgrade to the latest version:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">docker compose pull
+docker compose up -d
+docker exec morgenruf-bot python -m src.db migrate</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+      <p>Always run migrations after pulling a new image to ensure the schema is up to date.</p>
+
+    </article>
+  </main>
+
+  <!-- ON THIS PAGE -->
+  <aside class="on-this-page">
+    <div class="on-this-page-label">On this page</div>
+    <nav>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#create-slack-app">Create Slack App</a></li>
+        <li><a href="#docker-compose">Docker Compose</a></li>
+        <li><a href="#env-setup">Environment Setup</a></li>
+        <li><a href="#start">Start Morgenruf</a></li>
+        <li><a href="#run-migrations">Run Migrations</a></li>
+        <li><a href="#verify">Verify Installation</a></li>
+        <li><a href="#ngrok">Local Dev with Ngrok</a></li>
+        <li><a href="#upgrading">Upgrading</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+</div>
+
+<script>
+  hljs.highlightAll();
+  const btn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+  }
+  btn.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+</script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQ — Morgenruf Docs</title>
+  <meta name="description" content="Frequently asked questions about Morgenruf, the open-source Slack standup bot." />
+  <link rel="stylesheet" href="assets/docs.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-icon">M</div>
+    <span class="logo-name">Morgenruf</span>
+    <span class="logo-docs">/ Docs</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <a href="https://morgenruf.dev" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+    <span>morgenruf.dev</span>
+  </a>
+</header>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Documentation</div>
+    <ul class="sidebar-nav">
+      <li><a href="index.html">
+        <span class="nav-icon">🏠</span> Welcome
+      </a></li>
+      <li><a href="getting-started.html">
+        <span class="nav-icon">🚀</span> Getting Started
+      </a></li>
+      <li><a href="configuration.html">
+        <span class="nav-icon">⚙️</span> Configuration
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Self Hosting</div>
+    <ul class="sidebar-nav">
+      <li><a href="self-hosting.html">
+        <span class="nav-icon">🐳</span> Docker
+      </a></li>
+      <li><a href="helm.html">
+        <span class="nav-icon">☸️</span> Kubernetes / Helm
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Help</div>
+    <ul class="sidebar-nav">
+      <li><a href="faq.html" class="active">
+        <span class="nav-icon">💬</span> FAQ
+      </a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="docs-main">
+    <article class="docs-content">
+
+      <h1>Frequently Asked Questions</h1>
+      <p class="page-subtitle">Common questions about Morgenruf, privacy, customization, and self-hosting.</p>
+
+      <h2 id="general">General</h2>
+
+      <div class="faq-list">
+
+        <div class="faq-item" id="faq-free">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Is Morgenruf really free?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Yes — completely free. The hosted version at <a href="https://morgenruf.dev">morgenruf.dev</a> is free with no hidden costs, no usage tiers, and no credit card required. The source code is also open-source (MIT licensed), so you can self-host it for free on your own infrastructure.</p>
+            <p>We may introduce optional paid features in the future (like analytics dashboards or priority support), but the core standup functionality will always remain free.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-data">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            What data does Morgenruf store?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Morgenruf stores the minimum data needed to operate:</p>
+            <ul>
+              <li><strong>Workspace configuration</strong>: channel ID, standup time, timezone, active days, custom questions</li>
+              <li><strong>Standup responses</strong>: the text answers submitted by team members</li>
+              <li><strong>Slack tokens</strong>: OAuth access tokens required to post messages and read channel membership</li>
+              <li><strong>User IDs</strong>: Slack user IDs (not names or emails)</li>
+            </ul>
+            <p>Morgenruf does <strong>not</strong> store message history outside of standup responses, read private channels, or share data with third parties. If you self-host, all data stays on your infrastructure.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-self-host">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Can I self-host Morgenruf?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Yes! Morgenruf is fully open-source and designed for self-hosting. You can run it anywhere Docker runs — a VPS, your own servers, or a cloud provider. We provide:</p>
+            <ul>
+              <li>A Docker image at <code>ghcr.io/morgenruf/morgenruf:latest</code></li>
+              <li>A Docker Compose setup — see <a href="self-hosting.html">Self Hosting</a></li>
+              <li>A Kubernetes Helm chart — see <a href="helm.html">Helm</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-geekbot">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            How is this different from Geekbot?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Geekbot is a commercial product with a free tier (limited to 10 users). Morgenruf differs in a few key ways:</p>
+            <ul>
+              <li><strong>Open source</strong>: full source code is available on GitHub under the MIT license</li>
+              <li><strong>No user limits</strong>: works for teams of any size, free</li>
+              <li><strong>Self-hostable</strong>: run it on your own infrastructure if you prefer full data control</li>
+              <li><strong>Minimalist</strong>: focused on the core standup flow — no bloat</li>
+            </ul>
+            <p>Geekbot has more features (reports, charts, integrations). Morgenruf is the right choice if you want simplicity and/or full control over your data.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <h2 id="slack">Slack &amp; Compatibility</h2>
+
+      <div class="faq-list">
+
+        <div class="faq-item" id="faq-enterprise">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Does it work with Slack Enterprise Grid?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Slack Enterprise Grid support is on the roadmap but not yet available in the hosted version. If you're on Enterprise Grid and need Morgenruf, the self-hosted option is the best path forward today — you can configure your Slack app manifest to support org-wide installations. <a href="https://github.com/morgenruf/morgenruf/issues" target="_blank" rel="noopener">Open an issue on GitHub</a> to track progress.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-timezones">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            What timezones are supported?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>All <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones" target="_blank" rel="noopener">IANA timezone database</a> timezones are supported. Use the full timezone name when configuring, for example:</p>
+            <ul>
+              <li><code>America/New_York</code></li>
+              <li><code>Europe/London</code></li>
+              <li><code>Asia/Kolkata</code></li>
+              <li><code>Australia/Sydney</code></li>
+              <li><code>UTC</code></li>
+            </ul>
+            <p>Set the timezone with: <code>config timezone America/Chicago</code></p>
+          </div>
+        </div>
+
+      </div>
+
+      <h2 id="privacy">Privacy &amp; Data</h2>
+
+      <div class="faq-list">
+
+        <div class="faq-item" id="faq-delete">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            How do I delete my data?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>To delete all data associated with your workspace:</p>
+            <ol>
+              <li>Remove Morgenruf from your Slack workspace: go to <strong>Apps</strong> in Slack → find Morgenruf → <strong>Remove App</strong></li>
+              <li>Morgenruf will detect the app_uninstalled event and delete all workspace data (configuration, standup responses, tokens) within 24 hours.</li>
+            </ol>
+            <p>For immediate deletion or questions, email <a href="mailto:privacy@morgenruf.dev">privacy@morgenruf.dev</a>.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <h2 id="customization">Customization</h2>
+
+      <div class="faq-list">
+
+        <div class="faq-item" id="faq-questions">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Can I customize the standup questions?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Yes! DM Morgenruf with <code>config questions</code> and it will walk you through setting up to three custom questions. You can use any questions that suit your team's workflow, for example:</p>
+            <ul>
+              <li>"What will you ship this sprint?"</li>
+              <li>"Do you need anything from the team?"</li>
+              <li>"How's your energy level today? (1–5)"</li>
+            </ul>
+            <p>See the <a href="configuration.html#customize-questions">Configuration page</a> for details.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-community">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Is there a Discord or community?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Not yet — but we're building one! In the meantime:</p>
+            <ul>
+              <li>File bugs and feature requests on <a href="https://github.com/morgenruf/morgenruf/issues" target="_blank" rel="noopener">GitHub Issues</a></li>
+              <li>Contribute code via <a href="https://github.com/morgenruf/morgenruf/pulls" target="_blank" rel="noopener">Pull Requests</a></li>
+              <li>Ask questions or start discussions in <a href="https://github.com/morgenruf/morgenruf/discussions" target="_blank" rel="noopener">GitHub Discussions</a></li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <hr />
+
+      <p style="margin-top:1.5rem">Still have questions? <a href="https://github.com/morgenruf/morgenruf/discussions" target="_blank" rel="noopener">Start a discussion on GitHub</a> or email <a href="mailto:hello@morgenruf.dev">hello@morgenruf.dev</a>.</p>
+
+    </article>
+  </main>
+
+  <!-- ON THIS PAGE -->
+  <aside class="on-this-page">
+    <div class="on-this-page-label">On this page</div>
+    <nav>
+      <ul>
+        <li><a href="#general">General</a></li>
+        <li><a href="#faq-free" class="h3">Is it free?</a></li>
+        <li><a href="#faq-data" class="h3">What data is stored?</a></li>
+        <li><a href="#faq-self-host" class="h3">Can I self-host?</a></li>
+        <li><a href="#faq-geekbot" class="h3">vs Geekbot?</a></li>
+        <li><a href="#slack">Slack &amp; Compatibility</a></li>
+        <li><a href="#faq-enterprise" class="h3">Enterprise Grid</a></li>
+        <li><a href="#faq-timezones" class="h3">Timezones</a></li>
+        <li><a href="#privacy">Privacy &amp; Data</a></li>
+        <li><a href="#faq-delete" class="h3">Delete data</a></li>
+        <li><a href="#customization">Customization</a></li>
+        <li><a href="#faq-questions" class="h3">Custom questions</a></li>
+        <li><a href="#faq-community" class="h3">Community</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+</div>
+
+<script>
+  hljs.highlightAll();
+
+  function toggleFaq(el) {
+    const item = el.parentElement;
+    item.classList.toggle('open');
+  }
+
+  // Open FAQ item if anchor matches
+  const hash = window.location.hash;
+  if (hash) {
+    const el = document.querySelector(hash);
+    if (el && el.classList.contains('faq-item')) {
+      el.classList.add('open');
+    }
+  }
+
+  const btn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+  }
+  btn.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+</script>
+</body>
+</html>

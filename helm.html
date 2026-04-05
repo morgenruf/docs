@@ -76,7 +76,7 @@
         <li>A running <strong>Kubernetes</strong> cluster (any cloud or on-prem)</li>
         <li><strong>Helm 3</strong> installed and configured against your cluster</li>
         <li>A <a href="https://api.slack.com/apps" target="_blank" rel="noopener">Slack app</a> with Client ID, Client Secret, and Signing Secret ready</li>
-        <li>Either a PostgreSQL instance or plan to use the bundled one (enabled by default)</li>
+        <li>A PostgreSQL instance (recommended) — the bundled PostgreSQL is available but defaults to <code>enabled: false</code>; use an external DB in production</li>
       </ul>
 
       <h2 id="add-helm-repo">Add the Helm Repository</h2>
@@ -90,9 +90,10 @@ helm repo update</code></pre>
         <pre><code class="language-bash">helm search repo morgenruf</code></pre>
         <span class="code-lang">bash</span>
       </div>
+      <p>The current chart version is <strong>0.3.0</strong>. To pin to a specific version, add <code>--version 0.3.0</code> to the install command.</p>
 
       <h2 id="install">Install</h2>
-      <p>Install with your Slack credentials passed directly via <code>--set</code> flags:</p>
+      <p>Install with all required values passed via <code>--set</code> flags:</p>
       <div class="code-block-wrapper">
         <pre><code class="language-bash">helm install morgenruf morgenruf/morgenruf \
   --namespace morgenruf \
@@ -100,8 +101,16 @@ helm repo update</code></pre>
   --set slack.clientId="YOUR_CLIENT_ID" \
   --set slack.clientSecret="YOUR_CLIENT_SECRET" \
   --set slack.signingSecret="YOUR_SIGNING_SECRET" \
-  --set postgresql.enabled=true</code></pre>
+  --set app.url="https://api.your-domain.com" \
+  --set flaskSecretKey="$(openssl rand -hex 32)" \
+  --set externalDatabase.url="postgresql://user:pass@db-host:5432/morgenruf" \
+  --set postgresql.enabled=false</code></pre>
         <span class="code-lang">bash</span>
+      </div>
+
+      <div class="callout warning">
+        <span class="callout-icon">⚠️</span>
+        <p><strong>clientSecret ≠ signingSecret.</strong> These are two different values from your Slack app's <em>Basic Information</em> page. Do not mix them up — the app will fail to verify Slack requests if <code>signingSecret</code> is wrong.</p>
       </div>
 
       <div class="callout tip">
@@ -114,18 +123,24 @@ helm repo update</code></pre>
       <div class="code-block-wrapper">
         <pre><code class="language-yaml">slack:
   clientId: "YOUR_CLIENT_ID"
-  clientSecret: "YOUR_CLIENT_SECRET"
-  signingSecret: "YOUR_SIGNING_SECRET"
+  clientSecret: "YOUR_CLIENT_SECRET"    # from Basic Information
+  signingSecret: "YOUR_SIGNING_SECRET"  # DIFFERENT from clientSecret!
 
+app:
+  url: "https://api.your-domain.com"  # public HTTPS URL, no trailing slash
+
+flaskSecretKey: "replace_with_openssl_rand_hex_32"
+
+# Recommended: use an external database
 postgresql:
-  enabled: true
-  auth:
-    database: morgenruf
-    password: "your-strong-password"
+  enabled: false
+
+externalDatabase:
+  url: "postgresql://user:password@your-db-host:5432/morgenruf"
 
 ingress:
   enabled: true
-  host: morgenruf.your-domain.com
+  host: api.your-domain.com
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -195,12 +210,22 @@ resources:
           <tr>
             <td><code>slack.signingSecret</code></td>
             <td><code>""</code></td>
-            <td>Slack Signing Secret for request verification.</td>
+            <td>Slack Signing Secret for request verification. <strong>Not the same as clientSecret.</strong></td>
+          </tr>
+          <tr>
+            <td><code>app.url</code></td>
+            <td><code>""</code></td>
+            <td>Public HTTPS URL of this instance (no trailing slash). Used for OAuth redirect URIs.</td>
+          </tr>
+          <tr>
+            <td><code>flaskSecretKey</code></td>
+            <td><code>""</code></td>
+            <td>Flask session signing key. Generate with <code>openssl rand -hex 32</code>.</td>
           </tr>
           <tr>
             <td><code>postgresql.enabled</code></td>
-            <td><code>true</code></td>
-            <td>Deploy a bundled PostgreSQL instance. Set to <code>false</code> to use an external DB.</td>
+            <td><code>false</code></td>
+            <td>Deploy a bundled PostgreSQL instance. Defaults to <code>false</code> — use an external DB in production.</td>
           </tr>
           <tr>
             <td><code>postgresql.auth.database</code></td>
@@ -270,6 +295,26 @@ resources:
         </tbody>
       </table>
 
+      <h2 id="cloudflare-tunnel">Cloudflare Tunnel (no Ingress)</h2>
+      <p>
+        If you use Cloudflare Tunnel instead of a traditional ingress controller, disable the built-in
+        Ingress resource and let the tunnel handle inbound traffic:
+      </p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-yaml">ingress:
+  enabled: false  # Cloudflare Tunnel routes traffic directly to the Service
+
+service:
+  type: ClusterIP
+  port: 3000</code></pre>
+        <span class="code-lang">values.yaml</span>
+      </div>
+      <p>
+        Point your <code>cloudflared</code> tunnel config at the Morgenruf Service name
+        (e.g. <code>http://morgenruf.morgenruf.svc.cluster.local:3000</code>).
+        Set <code>app.url</code> to the public hostname exposed by Cloudflare.
+      </p>
+
       <h2 id="upgrade">Upgrade</h2>
       <p>To upgrade to a newer chart or image version:</p>
       <div class="code-block-wrapper">
@@ -317,6 +362,7 @@ externalDatabase:
         <li><a href="#install">Install</a></li>
         <li><a href="#install-with-values-file" class="h3">With values file</a></li>
         <li><a href="#values-reference">Values Reference</a></li>
+        <li><a href="#cloudflare-tunnel">Cloudflare Tunnel</a></li>
         <li><a href="#upgrade">Upgrade</a></li>
         <li><a href="#uninstall">Uninstall</a></li>
         <li><a href="#external-postgres">External PostgreSQL</a></li>

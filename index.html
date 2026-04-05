@@ -78,21 +78,50 @@
         a clean summary to your designated channel — all at a time you choose.
       </p>
       <p>
-        The name comes from German: <em>Morgenruf</em> means "morning call." It's designed to be simple,
-        respectful of everyone's time, and completely transparent — you can inspect, modify, and host
-        every line of code yourself.
+        The name comes from German: <em>Morgenruf</em> means "morning call." Configure everything via the
+        web dashboard, then sit back — the bot handles the rest. It's designed to be simple, respectful of
+        everyone's time, and completely transparent: you can inspect, modify, and host every line of code yourself.
       </p>
 
       <h2 id="key-features">Key Features</h2>
       <ul class="feature-list">
-        <li>Automated daily DMs with your custom standup questions</li>
+        <li>Automated daily DMs with configurable standup questions (Yesterday / Today / Blockers / Mood 😊😐😔)</li>
         <li>Posts summaries to any channel, at any time, in any timezone</li>
-        <li>Fully configurable via simple Slack DM commands</li>
+        <li>Configure everything via the <strong>web dashboard</strong> — channel, schedule, questions, members</li>
+        <li>Custom questions: add, remove, and reorder the question list from the dashboard</li>
+        <li><code>skip</code> command — skip today's standup without bothering your admin</li>
+        <li>Per-user timezone override via <code>timezone &lt;tz&gt;</code> DM</li>
+        <li>Pre-standup reminder DM (configurable minutes before)</li>
+        <li>Participation analytics: 7-day / 30-day view per member, CSV export</li>
+        <li>Weekly digest email to workspace admin every Sunday (requires Resend API key)</li>
+        <li>App Home tab in Slack showing your standup history</li>
+        <li>HMAC-signed webhooks on <code>standup.completed</code> events</li>
         <li>Free hosted version — no credit card required</li>
         <li>Open-source: self-host with Docker or Kubernetes / Helm</li>
         <li>Lightweight &amp; fast — runs on a single container</li>
-        <li>No third-party tracking or analytics</li>
       </ul>
+
+      <h2 id="quick-start">Quick Start</h2>
+      <ol class="steps">
+        <li>
+          <div class="step-content">
+            <h3>Install from morgenruf.dev</h3>
+            <p>Click <strong>Add to Slack</strong> at <a href="https://morgenruf.dev" target="_blank" rel="noopener">morgenruf.dev</a> to start the OAuth flow. You'll receive a welcome DM once installed.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Configure via the dashboard</h3>
+            <p>Visit <code>https://&lt;your-api-domain&gt;/dashboard</code> to set your standup channel, schedule, timezone, questions, and team members.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Bot DMs your team at the scheduled time</h3>
+            <p>At the configured time, Morgenruf DMs each participant with your standup questions. Responses are collected and posted as a summary to the channel.</p>
+          </div>
+        </li>
+      </ol>
 
       <h2 id="quick-links">Quick Links</h2>
       <div class="cards-grid">
@@ -140,6 +169,7 @@
       <ul>
         <li><a href="#what-is-morgenruf">What is Morgenruf?</a></li>
         <li><a href="#key-features">Key Features</a></li>
+        <li><a href="#quick-start">Quick Start</a></li>
         <li><a href="#quick-links">Quick Links</a></li>
         <li><a href="#add-to-slack">Add to Slack</a></li>
       </ul>

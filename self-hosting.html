@@ -76,6 +76,11 @@
         <p>Prefer Kubernetes? See the <a href="helm.html">Helm chart guide</a> for a production-ready cluster deployment.</p>
       </div>
 
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <p>The Docker image <code>ghcr.io/morgenruf/morgenruf:latest</code> is <strong>public</strong> — no registry authentication or <code>imagePullSecrets</code> required.</p>
+      </div>
+
       <h2 id="prerequisites">Prerequisites</h2>
       <ul>
         <li><strong>Docker</strong> 24+ and <strong>Docker Compose</strong> v2+ installed on your host</li>
@@ -133,10 +138,10 @@ volumes:
       </div>
       <p>Open <code>.env</code> in your editor and set the required values:</p>
       <div class="code-block-wrapper">
-        <pre><code class="language-bash"># Slack credentials (from api.slack.com/apps)
+        <pre><code class="language-bash"># Slack credentials (from api.slack.com/apps → Basic Information)
 SLACK_CLIENT_ID=your_client_id
 SLACK_CLIENT_SECRET=your_client_secret
-SLACK_SIGNING_SECRET=your_signing_secret
+SLACK_SIGNING_SECRET=your_signing_secret  # different from CLIENT_SECRET!
 
 # Database (matches docker-compose.yml postgres service)
 DATABASE_URL=postgresql://morgenruf:changeme@postgres:5432/morgenruf
@@ -144,11 +149,17 @@ DATABASE_URL=postgresql://morgenruf:changeme@postgres:5432/morgenruf
 # Public URL of this instance (no trailing slash)
 APP_URL=https://morgenruf.your-domain.com
 
-# Optional: Resend API key for welcome emails
+# Flask session signing key — generate with: openssl rand -hex 32
+FLASK_SECRET_KEY=replace_with_a_long_random_string
+
+# Optional: Resend API key for welcome + weekly digest emails
 # RESEND_API_KEY=re_...
 
 # Optional: override the HTTP port (default 3000)
-# PORT=3000</code></pre>
+# PORT=3000
+
+# Optional: log verbosity (DEBUG/INFO/WARNING, default INFO)
+# LOG_LEVEL=INFO</code></pre>
         <span class="code-lang">.env</span>
       </div>
 
@@ -160,13 +171,21 @@ docker compose up -d</code></pre>
         <span class="code-lang">bash</span>
       </div>
 
-      <h2 id="run-migrations">Run Database Migrations</h2>
-      <p>On first run (and after upgrades), apply the database schema:</p>
+      <h2 id="run-migrations">Database Migrations</h2>
+      <p>
+        Migrations run <strong>automatically</strong> when the container starts (via an init container in
+        Kubernetes, or on startup in Docker). You can also run them manually:
+      </p>
       <div class="code-block-wrapper">
-        <pre><code class="language-bash">docker exec morgenruf-bot python -m src.db migrate</code></pre>
+        <pre><code class="language-bash">docker run --rm --env-file .env   ghcr.io/morgenruf/morgenruf:latest   python src/migrate.py</code></pre>
         <span class="code-lang">bash</span>
       </div>
-      <p>The container name defaults to <code>morgenruf-bot</code> — adjust if you renamed it in <code>docker-compose.yml</code>.</p>
+      <p>Or against a running container:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">docker exec morgenruf-bot-1 python src/migrate.py</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+      <p>Always run migrations after pulling a new image to ensure the schema is up to date.</p>
 
       <h2 id="verify">Verify the Installation</h2>
       <p>Check the health endpoint to confirm the bot is running:</p>
@@ -209,11 +228,10 @@ ngrok http 3000</code></pre>
       <p>To upgrade to the latest version:</p>
       <div class="code-block-wrapper">
         <pre><code class="language-bash">docker compose pull
-docker compose up -d
-docker exec morgenruf-bot python -m src.db migrate</code></pre>
+docker compose up -d</code></pre>
         <span class="code-lang">bash</span>
       </div>
-      <p>Always run migrations after pulling a new image to ensure the schema is up to date.</p>
+      <p>Migrations run automatically on container start. To run them manually, see the <a href="#run-migrations">Database Migrations</a> section above.</p>
 
     </article>
   </main>
@@ -228,7 +246,7 @@ docker exec morgenruf-bot python -m src.db migrate</code></pre>
         <li><a href="#docker-compose">Docker Compose</a></li>
         <li><a href="#env-setup">Environment Setup</a></li>
         <li><a href="#start">Start Morgenruf</a></li>
-        <li><a href="#run-migrations">Run Migrations</a></li>
+        <li><a href="#run-migrations">Migrations</a></li>
         <li><a href="#verify">Verify Installation</a></li>
         <li><a href="#ngrok">Local Dev with Ngrok</a></li>
         <li><a href="#upgrading">Upgrading</a></li>

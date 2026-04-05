@@ -165,7 +165,7 @@
               <li><code>Australia/Sydney</code></li>
               <li><code>UTC</code></li>
             </ul>
-            <p>Set the timezone with: <code>config timezone America/Chicago</code></p>
+            <p>Set your personal timezone with the DM command: <code>timezone America/Chicago</code></p>
           </div>
         </div>
 
@@ -202,13 +202,13 @@
             <span class="faq-chevron">▼</span>
           </div>
           <div class="faq-answer">
-            <p>Yes! DM Morgenruf with <code>config questions</code> and it will walk you through setting up to three custom questions. You can use any questions that suit your team's workflow, for example:</p>
+            <p>Yes! In the dashboard, open <strong>Edit Standup → Questions</strong> to add, remove, and reorder questions. You can use any questions that suit your team's workflow, for example:</p>
             <ul>
               <li>"What will you ship this sprint?"</li>
               <li>"Do you need anything from the team?"</li>
               <li>"How's your energy level today? (1–5)"</li>
             </ul>
-            <p>See the <a href="configuration.html#customize-questions">Configuration page</a> for details.</p>
+            <p>See the <a href="configuration.html#custom-questions">Configuration page</a> for details.</p>
           </div>
         </div>
 
@@ -224,6 +224,105 @@
               <li>Contribute code via <a href="https://github.com/morgenruf/morgenruf/pulls" target="_blank" rel="noopener">Pull Requests</a></li>
               <li>Ask questions or start discussions in <a href="https://github.com/morgenruf/morgenruf/discussions" target="_blank" rel="noopener">GitHub Discussions</a></li>
             </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <h2 id="using-morgenruf">Using Morgenruf</h2>
+
+      <div class="faq-list">
+
+        <div class="faq-item" id="faq-skip">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            How do I skip today's standup?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>DM <code>skip</code> to the bot before your standup time. You won't receive a standup DM that day. This only affects you — other team members' standups are unaffected.</p>
+            <p>If you're on holiday for multiple days, either DM <code>skip</code> each morning or ask your admin to temporarily remove you from the Members list in the dashboard.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-custom-questions">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Can I change the standup questions?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Yes — go to the dashboard, open <strong>Edit Standup → Questions</strong>, and add, remove, or reorder your questions. Changes take effect at the next standup.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-wrong-time">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            The bot sends at the wrong time for me
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Your workspace has a default timezone set in the dashboard. If you're in a different timezone, DM the bot to set a personal override:</p>
+            <div class="code-block-wrapper">
+              <pre><code class="language-plaintext">timezone Asia/Kolkata</code></pre>
+              <span class="code-lang">slack dm</span>
+            </div>
+            <p>Use any <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones" target="_blank" rel="noopener">IANA timezone name</a>. Your standup DM will now arrive at the configured time in <em>your</em> timezone.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-mood">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            What is the mood question?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>After answering the Blockers question, the bot asks: <em>"How are you feeling today? 😊 😐 😔"</em></p>
+            <p>It's a lightweight pulse check — just reply with one of the three emoji. The response is optional (you can skip it), but it's tracked in the Analytics tab so your team can spot trends over time.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-weekly-digest">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            How do I get a weekly summary email?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Weekly digest emails are sent automatically every <strong>Sunday at 6 PM</strong> (workspace timezone) to the workspace admin. The email includes total responses, participation %, and a per-member breakdown.</p>
+            <p>This feature requires <code>RESEND_API_KEY</code> to be configured in your environment. Without it, digest emails are silently skipped. See the <a href="configuration.html#environment-variables">Environment Variables</a> section.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-export">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            How do I export standup data?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Go to <strong>Dashboard → Analytics tab</strong> and click the <strong>Export CSV</strong> button. You can optionally filter by date range before exporting. The CSV includes all member responses, timestamps, and mood data.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-holiday">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            The bot is DMing me when I'm on holiday
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Two options:</p>
+            <ul>
+              <li><strong>Short absence:</strong> DM <code>skip</code> to the bot each morning to skip that day's standup.</li>
+              <li><strong>Longer absence:</strong> Ask your workspace admin to temporarily remove you from the participants list in the dashboard (Dashboard → Members). You can be re-added when you return.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-webhooks">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            What webhooks does Morgenruf support?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Morgenruf fires a <code>standup.completed</code> event webhook whenever a user finishes their standup. Each request is HMAC-SHA256 signed with a <code>X-Morgenruf-Signature: sha256=...</code> header so you can verify the payload.</p>
+            <p>Register webhook endpoints in <strong>Dashboard → Webhooks</strong>. See the <a href="configuration.html#webhooks">Webhooks section</a> in the Configuration docs for the full payload schema.</p>
           </div>
         </div>
 
@@ -254,6 +353,15 @@
         <li><a href="#customization">Customization</a></li>
         <li><a href="#faq-questions" class="h3">Custom questions</a></li>
         <li><a href="#faq-community" class="h3">Community</a></li>
+        <li><a href="#using-morgenruf">Using Morgenruf</a></li>
+        <li><a href="#faq-skip" class="h3">Skip today</a></li>
+        <li><a href="#faq-custom-questions" class="h3">Change questions</a></li>
+        <li><a href="#faq-wrong-time" class="h3">Wrong timezone</a></li>
+        <li><a href="#faq-mood" class="h3">Mood question</a></li>
+        <li><a href="#faq-weekly-digest" class="h3">Weekly digest</a></li>
+        <li><a href="#faq-export" class="h3">Export data</a></li>
+        <li><a href="#faq-holiday" class="h3">On holiday</a></li>
+        <li><a href="#faq-webhooks" class="h3">Webhooks</a></li>
       </ul>
     </nav>
   </aside>

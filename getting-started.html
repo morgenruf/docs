@@ -93,46 +93,131 @@
         </li>
         <li>
           <div class="step-content">
-            <h3>Done — Morgenruf will DM you</h3>
-            <p>Within a few seconds, Morgenruf sends you a welcome DM. It will guide you through setting your standup channel, schedule, and timezone.</p>
+            <h3>Welcome DM arrives</h3>
+            <p>Within a few seconds, Morgenruf sends you a welcome DM and a welcome email (if <code>RESEND_API_KEY</code> is configured). Your next step is to configure the bot via the dashboard.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Visit the dashboard to configure</h3>
+            <p>Go to <code>https://&lt;your-api-domain&gt;/dashboard</code> to set your standup channel, schedule, timezone, questions, and which team members participate.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Invite the bot to your standup channel</h3>
+            <p>In the channel where you want summaries posted, run:</p>
+            <div class="code-block-wrapper">
+              <pre><code class="language-plaintext">/invite @Morgenruf</code></pre>
+              <span class="code-lang">slack</span>
+            </div>
           </div>
         </li>
       </ol>
 
       <div class="callout info">
         <span class="callout-icon">ℹ️</span>
-        <p>Only the person who installs Morgenruf needs to go through the OAuth flow. Other team members are added by inviting Morgenruf to your standup channel.</p>
+        <p>Only the person who installs Morgenruf needs to go through the OAuth flow. Other team members are added via the dashboard's Members section.</p>
       </div>
 
       <h2 id="what-happens-next">What Happens Next</h2>
-      <p>After installation, Morgenruf will DM the installing user to walk through initial setup:</p>
+      <p>After installation and dashboard configuration, Morgenruf runs on autopilot:</p>
       <ul>
-        <li>Confirm which <strong>channel</strong> standup summaries should be posted to</li>
-        <li>Set the <strong>time</strong> and <strong>timezone</strong> for daily standup reminders</li>
-        <li>Choose which <strong>days</strong> of the week to run standups (default: Mon–Fri)</li>
-        <li>Optionally customize the three standup questions</li>
+        <li>At the configured time, each participant receives a <strong>standup DM</strong> with your questions</li>
+        <li>If a reminder is configured, a <strong>heads-up DM</strong> goes out N minutes before standup time</li>
+        <li>Once responses are collected, a <strong>summary is posted</strong> to your standup channel</li>
+        <li>Participation analytics are tracked in the dashboard's Analytics tab</li>
       </ul>
-      <p>You can change any of these settings later by DMing Morgenruf — see the <a href="configuration.html">Configuration</a> page for all available commands.</p>
+      <p>See the <a href="configuration.html">Configuration</a> page for everything you can configure in the dashboard.</p>
 
       <h2 id="invite-to-channel">Invite Morgenruf to Your Channel</h2>
-      <p>To enable standup summaries in a channel, invite Morgenruf to it:</p>
+      <p>To let Morgenruf post standup summaries in a channel, invite it there:</p>
       <div class="code-block-wrapper">
         <pre><code class="language-plaintext">/invite @Morgenruf</code></pre>
         <span class="code-lang">slack</span>
       </div>
-      <p>Run this command inside the channel where you want summaries posted. Morgenruf also needs to be in the channel to DM the members (it can see channel membership for channels it's a member of).</p>
+      <p>Run this inside the channel you selected in the dashboard as your standup channel. The bot needs to be a member of the channel to post the daily summary.</p>
 
-      <h2 id="first-standup">Running Your First Standup</h2>
-      <p>Standups run automatically at the configured time. But you can trigger one immediately for testing:</p>
+      <h2 id="first-standup">Your First Standup</h2>
+      <p>Standups run automatically at the configured time. To trigger one immediately for testing, DM the bot:</p>
       <div class="code-block-wrapper">
-        <pre><code class="language-plaintext">@Morgenruf standup</code></pre>
-        <span class="code-lang">slack</span>
+        <pre><code class="language-plaintext">standup</code></pre>
+        <span class="code-lang">slack dm</span>
       </div>
-      <p>Morgenruf will DM every member of the standup channel asking the three questions. Once everyone responds (or after the collection window closes), it posts the summary to the configured channel.</p>
+      <p>Morgenruf will walk you through four questions, one at a time:</p>
+
+      <div class="slack-chat">
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta">
+              <span class="slack-name bot-name">Morgenruf</span>
+              <span class="slack-time">9:00 AM</span>
+            </div>
+            <div class="slack-text">🌅 Time for your standup!<br><br>What did you work on <strong>yesterday</strong>?</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar user">Y</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name">You</span><span class="slack-time">9:01 AM</span></div>
+            <div class="slack-text">Finished the auth refactor and reviewed two PRs.</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">9:01 AM</span></div>
+            <div class="slack-text">Got it! What are you working on <strong>today</strong>?</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar user">Y</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name">You</span><span class="slack-time">9:02 AM</span></div>
+            <div class="slack-text">Writing tests for the new API endpoints.</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">9:02 AM</span></div>
+            <div class="slack-text">Any <strong>blockers</strong> or anything the team should know?</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar user">Y</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name">You</span><span class="slack-time">9:02 AM</span></div>
+            <div class="slack-text">Nope, all good.</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">9:02 AM</span></div>
+            <div class="slack-text">Last one — how are you feeling today? 😊 😐 😔</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar user">Y</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name">You</span><span class="slack-time">9:03 AM</span></div>
+            <div class="slack-text">😊</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">9:03 AM</span></div>
+            <div class="slack-text">✅ All done! Your standup has been recorded and will appear in <code>#standup</code>.</div>
+          </div>
+        </div>
+      </div>
 
       <div class="callout tip">
         <span class="callout-icon">💡</span>
-        <p>The collection window defaults to 2 hours. Responses submitted after that window are still saved but may not appear in that day's summary.</p>
+        <p>The mood question (😊/😐/😔) is tracked in the Analytics tab. The edit window (configurable in the dashboard) lets users update their answers after submitting.</p>
       </div>
 
       <h2 id="self-hosting">Prefer to Self-Host?</h2>
@@ -161,7 +246,7 @@
         <li><a href="#hosted-version">Hosted Version</a></li>
         <li><a href="#what-happens-next">What Happens Next</a></li>
         <li><a href="#invite-to-channel">Invite to Channel</a></li>
-        <li><a href="#first-standup">First Standup</a></li>
+        <li><a href="#first-standup">Your First Standup</a></li>
         <li><a href="#self-hosting">Self-Hosting</a></li>
       </ul>
     </nav>

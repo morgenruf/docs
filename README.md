@@ -1,5 +1,8 @@
 # Morgenruf Docs
 
+[![Docs](https://img.shields.io/website?url=https%3A%2F%2Fdocs.morgenruf.dev&label=docs.morgenruf.dev&color=brightgreen)](https://docs.morgenruf.dev)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Documentation site for [Morgenruf](https://morgenruf.dev), deployed at [docs.morgenruf.dev](https://docs.morgenruf.dev).
 
 ## Structure

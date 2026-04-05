@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCP Integration — Morgenruf Docs</title>
+  <meta name="description" content="Connect Claude, Cursor, and GitHub Copilot to your Morgenruf standup data using the Model Context Protocol." />
+  <link rel="stylesheet" href="assets/docs.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-icon">M</div>
+    <span class="logo-name">Morgenruf</span>
+    <span class="logo-docs">/ Docs</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <a href="https://morgenruf.dev" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+    <span>morgenruf.dev</span>
+  </a>
+</header>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Documentation</div>
+    <ul class="sidebar-nav">
+      <li><a href="index.html">
+        <span class="nav-icon">🏠</span> Welcome
+      </a></li>
+      <li><a href="getting-started.html">
+        <span class="nav-icon">🚀</span> Getting Started
+      </a></li>
+      <li><a href="configuration.html">
+        <span class="nav-icon">⚙️</span> Configuration
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Self Hosting</div>
+    <ul class="sidebar-nav">
+      <li><a href="self-hosting.html">
+        <span class="nav-icon">🐳</span> Docker
+      </a></li>
+      <li><a href="helm.html">
+        <span class="nav-icon">☸️</span> Kubernetes / Helm
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Integrations</div>
+    <ul class="sidebar-nav">
+      <li><a href="mcp.html" class="active">
+        <span class="nav-icon">🔌</span> MCP
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Help</div>
+    <ul class="sidebar-nav">
+      <li><a href="faq.html">
+        <span class="nav-icon">💬</span> FAQ
+      </a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="docs-main">
+    <article class="docs-content">
+
+      <h1>MCP Integration</h1>
+      <p class="page-subtitle">Connect Claude, Cursor, and GitHub Copilot to your standup data using the Model Context Protocol.</p>
+
+      <h2 id="what-is-mcp">What is MCP?</h2>
+      <p>
+        The <strong>Model Context Protocol (MCP)</strong> is an open standard that lets AI assistants — including
+        Claude, Cursor, and GitHub Copilot — query external data sources directly during a conversation.
+        Morgenruf ships a built-in MCP server that exposes your standup data to any compatible AI tool.
+      </p>
+      <p>
+        Once configured, you can ask your AI assistant questions like:
+      </p>
+      <ul>
+        <li>"What did my team work on this week?"</li>
+        <li>"Who has blockers today?"</li>
+        <li>"What's our standup participation rate?"</li>
+        <li>"Summarize yesterday's standups for me"</li>
+      </ul>
+      <p>
+        The AI will call the Morgenruf MCP tools behind the scenes and return answers grounded in your real
+        standup history — no copy-pasting, no manual context.
+      </p>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ️</span>
+        <p>MCP requires direct database access, so it runs as a local process on your machine pointing at your
+        PostgreSQL instance. Your standup data never leaves your infrastructure.</p>
+      </div>
+
+      <h2 id="available-tools">Available Tools</h2>
+      <p>The Morgenruf MCP server exposes 8 tools to AI assistants:</p>
+
+      <table class="docs-table">
+        <thead>
+          <tr>
+            <th>Tool</th>
+            <th>Description</th>
+            <th>Parameters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>get_standups</code></td>
+            <td>Fetch standup history for a date range</td>
+            <td><code>team_id</code>, <code>from_date</code>, <code>to_date</code></td>
+          </tr>
+          <tr>
+            <td><code>get_today_standups</code></td>
+            <td>Retrieve today's submitted standups</td>
+            <td><code>team_id</code></td>
+          </tr>
+          <tr>
+            <td><code>get_blockers</code></td>
+            <td>List active blockers reported by team members</td>
+            <td><code>team_id</code>, <code>days</code></td>
+          </tr>
+          <tr>
+            <td><code>get_participation</code></td>
+            <td>Participation percentage statistics</td>
+            <td><code>team_id</code>, <code>days</code></td>
+          </tr>
+          <tr>
+            <td><code>get_members</code></td>
+            <td>List all members in the workspace</td>
+            <td><code>team_id</code></td>
+          </tr>
+          <tr>
+            <td><code>search_standups</code></td>
+            <td>Full-text search across standup responses</td>
+            <td><code>team_id</code>, <code>query</code>, <code>days</code></td>
+          </tr>
+          <tr>
+            <td><code>get_workspace_summary</code></td>
+            <td>High-level overview of workspace activity</td>
+            <td><code>team_id</code></td>
+          </tr>
+          <tr>
+            <td><code>get_mood_summary</code></td>
+            <td>Team mood trends over time</td>
+            <td><code>team_id</code>, <code>days</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="find-team-id">How to Find Your Team ID</h2>
+      <p>Every MCP tool requires a <code>team_id</code>. This is your Slack workspace ID. Here's how to find it:</p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-content">
+            <h3>Log in to the Morgenruf dashboard</h3>
+            <p>Navigate to <code>https://your-domain.com/dashboard</code> and sign in with your Slack account.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Open your workspace menu</h3>
+            <p>Click your profile or workspace name in the <strong>top-right corner</strong> of the dashboard.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Go to the Settings tab</h3>
+            <p>Select the <strong>Settings</strong> tab from the navigation menu.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Copy your Team ID</h3>
+            <p>Your <strong>Team ID</strong> is displayed in the "MCP Integration" section. Click it to copy it to your clipboard.</p>
+            <p>It looks like: <code>T0123ABCDE</code> (a Slack workspace ID starting with <code>T</code>).</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <p><strong>Alternative ways to find your Team ID:</strong> it appears in the URL after the Slack OAuth install redirect, or you can ask your Slack workspace admin — it's shown in Slack's workspace settings under "About this workspace".</p>
+      </div>
+
+      <h2 id="setup-claude">Setup for Claude Desktop</h2>
+      <p>Claude Desktop supports MCP servers via a JSON config file. Follow these steps:</p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-content">
+            <h3>Install dependencies</h3>
+            <div class="code-block-wrapper">
+              <pre><code class="language-bash">pip install mcp>=1.0.0 psycopg2-binary</code></pre>
+              <span class="code-lang">bash</span>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Get the MCP server script</h3>
+            <p>Download <code>mcp_server.py</code> from your Morgenruf installation directory (<code>app/src/mcp_server.py</code>) or from the <a href="https://github.com/morgenruf/morgenruf" target="_blank" rel="noopener">GitHub repository</a>.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Edit the Claude Desktop config file</h3>
+            <p>Open the config file for your OS:</p>
+            <ul>
+              <li><strong>macOS:</strong> <code>~/Library/Application Support/Claude/claude_desktop_config.json</code></li>
+              <li><strong>Windows:</strong> <code>%APPDATA%\Claude\claude_desktop_config.json</code></li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Add the Morgenruf server config</h3>
+            <div class="code-block-wrapper">
+              <pre><code class="language-json">{
+  "mcpServers": {
+    "morgenruf": {
+      "command": "python",
+      "args": ["/path/to/morgenruf/app/src/mcp_server.py"],
+      "env": {
+        "DATABASE_URL": "postgresql://morgenruf:password@localhost:5432/morgenruf",
+        "MCP_TEAM_ID": "T0123ABCDE"
+      }
+    }
+  }
+}</code></pre>
+              <span class="code-lang">json</span>
+            </div>
+            <p>Replace <code>/path/to/morgenruf</code> with your actual path, <code>DATABASE_URL</code> with your PostgreSQL connection string, and <code>MCP_TEAM_ID</code> with your Team ID.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Restart Claude Desktop</h3>
+            <p>Fully quit and reopen Claude Desktop for the config to take effect.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Verify the connection</h3>
+            <p>Look for the <strong>🔌</strong> icon in Claude's interface. Click it to see a list of available tools — you should see all 8 Morgenruf tools listed there.</p>
+          </div>
+        </li>
+      </ol>
+
+      <h2 id="setup-cursor">Setup for Cursor</h2>
+      <p>Cursor uses a similar MCP config file located at <code>~/.cursor/mcp.json</code>:</p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-content">
+            <h3>Create or edit <code>~/.cursor/mcp.json</code></h3>
+            <div class="code-block-wrapper">
+              <pre><code class="language-json">{
+  "mcpServers": {
+    "morgenruf": {
+      "command": "python",
+      "args": ["/path/to/mcp_server.py"],
+      "env": {
+        "DATABASE_URL": "postgresql://morgenruf:password@localhost:5432/morgenruf",
+        "MCP_TEAM_ID": "T0123ABCDE"
+      }
+    }
+  }
+}</code></pre>
+              <span class="code-lang">json</span>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Restart Cursor</h3>
+            <p>Reload the Cursor window (or fully restart) for the MCP server to be picked up.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Start chatting</h3>
+            <p>Open Cursor's AI chat and ask about your standup data — Cursor will call the Morgenruf tools automatically.</p>
+          </div>
+        </li>
+      </ol>
+
+      <h2 id="setup-copilot">Setup for GitHub Copilot</h2>
+      <p>Add an MCP config to your workspace's <code>.github/copilot-config.json</code>:</p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-content">
+            <h3>Create <code>.github/copilot-config.json</code> in your repository</h3>
+            <div class="code-block-wrapper">
+              <pre><code class="language-json">{
+  "mcp": {
+    "servers": {
+      "morgenruf": {
+        "command": "python",
+        "args": ["/path/to/mcp_server.py"],
+        "env": {
+          "DATABASE_URL": "postgresql://morgenruf:password@localhost:5432/morgenruf",
+          "MCP_TEAM_ID": "T0123ABCDE"
+        }
+      }
+    }
+  }
+}</code></pre>
+              <span class="code-lang">json</span>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Reload VS Code / GitHub Copilot</h3>
+            <p>Reload your editor window so GitHub Copilot picks up the new MCP server configuration.</p>
+          </div>
+        </li>
+      </ol>
+
+      <h2 id="example-questions">Example Questions to Ask Your AI</h2>
+      <p>Once MCP is connected, try asking your AI assistant:</p>
+
+      <ul>
+        <li>"What did my team work on this week?"</li>
+        <li>"Who has blockers right now?"</li>
+        <li>"What's our standup participation rate?"</li>
+        <li>"Summarize yesterday's standups"</li>
+        <li>"Which team member has been most blocked recently?"</li>
+        <li>"What's the team mood trend this month?"</li>
+      </ul>
+
+      <div class="callout tip">
+        <span class="callout-icon">💡</span>
+        <p>The AI will automatically pick the right MCP tool for each question — you don't need to know which tool to call. Just ask naturally.</p>
+      </div>
+
+      <h2 id="troubleshooting">Troubleshooting</h2>
+
+      <dl class="faq-list">
+        <div class="faq-item">
+          <dt>"Tool not found" error</dt>
+          <dd>Fully restart your AI client (Claude Desktop, Cursor, or VS Code) after making any changes to the MCP config file. The server list is only loaded at startup.</dd>
+        </div>
+        <div class="faq-item">
+          <dt>"Database connection failed"</dt>
+          <dd>Check that your <code>DATABASE_URL</code> is reachable from your machine. If Morgenruf is running in Docker or a remote server, you may need to expose the PostgreSQL port or use an SSH tunnel.</dd>
+        </div>
+        <div class="faq-item">
+          <dt>"No data returned" or empty results</dt>
+          <dd>Verify that <code>MCP_TEAM_ID</code> matches your Slack workspace ID exactly. You can double-check it in the Morgenruf dashboard under Settings → MCP Integration.</dd>
+        </div>
+        <div class="faq-item">
+          <dt>Python not found</dt>
+          <dd>Use the full path to your Python binary instead of just <code>python</code>. Common paths: <code>/usr/bin/python3</code>, <code>/opt/homebrew/bin/python3</code>, or <code>/usr/local/bin/python3</code>. Run <code>which python3</code> in your terminal to find the right path.</dd>
+        </div>
+      </dl>
+
+    </article>
+  </main>
+
+  <!-- ON THIS PAGE -->
+  <aside class="on-this-page">
+    <div class="on-this-page-label">On this page</div>
+    <nav>
+      <ul>
+        <li><a href="#what-is-mcp">What is MCP?</a></li>
+        <li><a href="#available-tools">Available Tools</a></li>
+        <li><a href="#find-team-id">Find Your Team ID</a></li>
+        <li><a href="#setup-claude">Setup for Claude</a></li>
+        <li><a href="#setup-cursor">Setup for Cursor</a></li>
+        <li><a href="#setup-copilot">Setup for Copilot</a></li>
+        <li><a href="#example-questions">Example Questions</a></li>
+        <li><a href="#troubleshooting">Troubleshooting</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+</div>
+
+<script>
+  hljs.highlightAll();
+  const btn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+  }
+  btn.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+</script>
+</body>
+</html>

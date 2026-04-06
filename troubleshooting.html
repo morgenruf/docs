@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Troubleshooting — Morgenruf Docs</title>
+  <meta name="description" content="Troubleshooting guide for common Morgenruf issues including slash commands, OAuth, database, scheduling, and deployment problems." />
+  <link rel="stylesheet" href="assets/docs.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-icon">M</div>
+    <span class="logo-name">Morgenruf</span>
+    <span class="logo-docs">/ Docs</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <a href="https://morgenruf.dev" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+    <span>morgenruf.dev</span>
+  </a>
+</header>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Documentation</div>
+    <ul class="sidebar-nav">
+      <li><a href="index.html">
+        <span class="nav-icon">🏠</span> Welcome
+      </a></li>
+      <li><a href="getting-started.html">
+        <span class="nav-icon">🚀</span> Getting Started
+      </a></li>
+      <li><a href="configuration.html">
+        <span class="nav-icon">⚙️</span> Configuration
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Self Hosting</div>
+    <ul class="sidebar-nav">
+      <li><a href="self-hosting.html">
+        <span class="nav-icon">🐳</span> Docker
+      </a></li>
+      <li><a href="helm.html">
+        <span class="nav-icon">☸️</span> Kubernetes / Helm
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Integrations</div>
+    <ul class="sidebar-nav">
+      <li><a href="mcp.html">
+        <span class="nav-icon">🔌</span> MCP
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Help</div>
+    <ul class="sidebar-nav">
+      <li><a href="faq.html">
+        <span class="nav-icon">💬</span> FAQ
+      </a></li>
+      <li><a href="troubleshooting.html" class="active">
+        <span class="nav-icon">🔧</span> Troubleshooting
+      </a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="docs-main">
+    <article class="docs-content">
+
+      <h1>Troubleshooting</h1>
+      <p class="page-subtitle">Solutions to common problems with Morgenruf. If your issue isn't listed here, <a href="https://github.com/morgenruf/morgenruf/discussions" target="_blank" rel="noopener">open a discussion on GitHub</a>.</p>
+
+      <h2 id="slash-commands">Bot Not Responding to Slash Commands</h2>
+
+      <div class="faq-list">
+
+        <div class="faq-item" id="ts-slash-no-response">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Slack says "dispatch_failed" or the bot doesn't respond
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>This usually means Slack can't reach your bot's request URL. Check the following:</p>
+            <ul>
+              <li>Your bot process is running and listening on the configured port.</li>
+              <li>The <strong>Request URL</strong> in your Slack app's Slash Commands settings matches the public URL of your deployment (e.g. <code>https://yourdomain.com/slack/events</code>).</li>
+              <li>Your server's TLS certificate is valid — Slack requires HTTPS with a trusted certificate.</li>
+              <li>No firewall or reverse proxy is blocking inbound requests from Slack's IP ranges.</li>
+            </ul>
+            <p>You can verify reachability by running:</p>
+            <div class="code-block-wrapper">
+              <pre><code class="language-bash">curl -X POST https://yourdomain.com/slack/events</code></pre>
+              <span class="code-lang">bash</span>
+            </div>
+            <p>You should receive a <code>400</code> or <code>401</code> response (not a connection error).</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="ts-slash-permission">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Slash command returns "not_in_channel" or a permissions error
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Morgenruf must be invited to the channel before slash commands can be used there. In Slack, run:</p>
+            <div class="code-block-wrapper">
+              <pre><code class="language-plaintext">/invite @Morgenruf</code></pre>
+              <span class="code-lang">slack</span>
+            </div>
+            <p>If you're self-hosting, also verify that your Slack app manifest includes the <code>commands</code> scope and the correct slash command definition.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <h2 id="oauth">OAuth / Installation Errors</h2>
+
+      <div class="faq-list">
+
+        <div class="faq-item" id="ts-oauth-redirect">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            OAuth redirect fails with "redirect_uri_mismatch"
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>The redirect URI registered in your Slack app must exactly match the one used at runtime. In your Slack app settings under <strong>OAuth &amp; Permissions → Redirect URLs</strong>, ensure the entry matches your <code>APP_URL</code> environment variable, including the path:</p>
+            <div class="code-block-wrapper">
+              <pre><code class="language-plaintext">https://yourdomain.com/slack/oauth_redirect</code></pre>
+              <span class="code-lang">example</span>
+            </div>
+            <p>Trailing slashes and HTTP vs HTTPS differences will cause a mismatch.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="ts-oauth-invalid-token">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Bot token is invalid or revoked after reinstall
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>When a workspace reinstalls the app, Slack issues a new token and invalidates the old one. Morgenruf stores the latest token automatically during the OAuth callback. If you see <code>invalid_auth</code> errors:</p>
+            <ol>
+              <li>Remove Morgenruf from your workspace in Slack → <strong>Apps → Remove App</strong>.</li>
+              <li>Reinstall via the "Add to Slack" button on <a href="https://morgenruf.dev">morgenruf.dev</a> (or your self-hosted install URL).</li>
+            </ol>
+            <p>For self-hosted deployments, also verify the <code>SLACK_CLIENT_ID</code> and <code>SLACK_CLIENT_SECRET</code> environment variables match the credentials in your Slack app settings.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <h2 id="database">Database Connection Issues</h2>
+
+      <div class="faq-list">
+
+        <div class="faq-item" id="ts-db-connect">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            App fails to start with "database connection refused" or similar
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Check that your <code>DATABASE_URL</code> environment variable is set and points to a reachable PostgreSQL instance:</p>
+            <div class="code-block-wrapper">
+              <pre><code class="language-plaintext">postgresql://user:password@host:5432/morgenruf</code></pre>
+              <span class="code-lang">example DATABASE_URL</span>
+            </div>
+            <p>Common causes:</p>
+            <ul>
+              <li>The database container hasn't finished starting up — add a <code>depends_on</code> health check in your <code>docker-compose.yml</code>.</li>
+              <li>The hostname is incorrect — when using Docker Compose, use the service name (e.g. <code>db</code>), not <code>localhost</code>.</li>
+              <li>The database user lacks the <code>CREATE</code> privilege needed for migrations.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="faq-item" id="ts-db-migration">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Migrations fail on startup
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Morgenruf runs database migrations automatically at startup. If migrations fail:</p>
+            <ul>
+              <li>Ensure the database exists before the app starts (create it with <code>createdb morgenruf</code> or via your cloud provider).</li>
+              <li>Check the application logs for the specific SQL error — it usually points to a permission or version incompatibility.</li>
+              <li>PostgreSQL 13 or newer is required.</li>
+            </ul>
+            <p>To run migrations manually:</p>
+            <div class="code-block-wrapper">
+              <pre><code class="language-bash">docker run --rm -e DATABASE_URL=... ghcr.io/morgenruf/morgenruf:latest migrate</code></pre>
+              <span class="code-lang">bash</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <h2 id="scheduling">Standup Not Sending at Scheduled Time</h2>
+
+      <div class="faq-list">
+
+        <div class="faq-item" id="ts-schedule-timezone">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Standup fires at the wrong time
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>The most common cause is a timezone misconfiguration. Verify:</p>
+            <ul>
+              <li>The workspace timezone in <strong>Dashboard → Settings</strong> is set to the correct <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones" target="_blank" rel="noopener">IANA timezone</a> (e.g. <code>America/New_York</code>, not <code>EST</code>).</li>
+              <li>Individual members haven't set a personal timezone override that conflicts with expectations — they can check with the DM command: <code>timezone</code>.</li>
+              <li>The server's system clock is accurate (run <code>date</code> in the container to verify).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="faq-item" id="ts-schedule-missed">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Standup was skipped entirely / no DMs sent
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>If no DMs were sent at all:</p>
+            <ul>
+              <li>Check that the standup is <strong>active</strong> in the dashboard — it may have been paused.</li>
+              <li>Confirm the scheduled day is enabled (e.g. if today is Monday, verify Monday is checked under <strong>Active Days</strong>).</li>
+              <li>If self-hosting, check that only one instance of the bot is running — multiple replicas can cause the scheduler to skip jobs. Use a single scheduler replica or a distributed lock (see the <a href="self-hosting.html">Self Hosting</a> docs).</li>
+              <li>Review application logs around the scheduled time for scheduler errors.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <h2 id="dashboard">Dashboard Not Loading</h2>
+
+      <div class="faq-list">
+
+        <div class="faq-item" id="ts-dashboard-blank">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Dashboard shows a blank page or infinite spinner
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Open the browser developer console (F12 → Console) and look for errors. Common causes:</p>
+            <ul>
+              <li><strong>Content Security Policy (CSP) error</strong>: If you're running behind a reverse proxy, ensure it isn't injecting a CSP header that blocks the app's scripts.</li>
+              <li><strong>API 401 errors</strong>: Your session has expired. Log out and log back in via the <strong>Sign in with Slack</strong> button.</li>
+              <li><strong>API 500 errors</strong>: A backend error — check server logs for the root cause.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="faq-item" id="ts-dashboard-auth">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            "You don't have permission to access this workspace" error
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Only workspace admins and members added in <strong>Dashboard → Members</strong> can access the dashboard. If you're an admin and still see this error:</p>
+            <ol>
+              <li>Sign out and sign back in with Slack to refresh your session.</li>
+              <li>Confirm you're signing in with the same Slack account that installed the app.</li>
+              <li>If self-hosting, verify the <code>SESSION_SECRET</code> environment variable is set and hasn't changed since installation.</li>
+            </ol>
+          </div>
+        </div>
+
+      </div>
+
+      <h2 id="deployment">Docker / Kubernetes Deployment Issues</h2>
+
+      <div class="faq-list">
+
+        <div class="faq-item" id="ts-docker-crash">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Container keeps restarting (CrashLoopBackOff)
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Inspect the container logs to find the root cause:</p>
+            <div class="code-block-wrapper">
+              <pre><code class="language-bash"># Docker
+docker logs morgenruf --tail 50
+
+# Kubernetes
+kubectl logs deployment/morgenruf --tail 50</code></pre>
+              <span class="code-lang">bash</span>
+            </div>
+            <p>Common causes:</p>
+            <ul>
+              <li>A required environment variable is missing — see <a href="configuration.html#environment-variables">Environment Variables</a> for the full list.</li>
+              <li>The database is unreachable at startup (see <a href="#ts-db-connect">Database Connection Issues</a> above).</li>
+              <li>Port conflicts — ensure nothing else is bound to the same port on the host.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="faq-item" id="ts-helm-values">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Helm deployment fails or pods stay in Pending state
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Check the pod events for scheduling or image-pull errors:</p>
+            <div class="code-block-wrapper">
+              <pre><code class="language-bash">kubectl describe pod -l app.kubernetes.io/name=morgenruf</code></pre>
+              <span class="code-lang">bash</span>
+            </div>
+            <p>Common causes:</p>
+            <ul>
+              <li><strong>ImagePullBackOff</strong>: The image tag in your <code>values.yaml</code> doesn't exist or the registry is unreachable. Use <code>ghcr.io/morgenruf/morgenruf:latest</code> or a pinned version tag.</li>
+              <li><strong>Pending / Insufficient resources</strong>: Your cluster doesn't have enough CPU or memory. Lower the resource requests in <code>values.yaml</code> or add nodes.</li>
+              <li><strong>Secret not found</strong>: If you're using Kubernetes Secrets for environment variables, verify the secret exists in the same namespace as the deployment.</li>
+            </ul>
+            <p>See the <a href="helm.html">Kubernetes / Helm</a> docs for a full deployment walkthrough.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="ts-ingress">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Ingress returns 502 or requests never reach the pod
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>A 502 from the ingress means it can reach the service but not the pod. Verify:</p>
+            <ul>
+              <li>The pod is <strong>Running</strong> and its readiness probe is passing: <code>kubectl get pods</code>.</li>
+              <li>The <code>Service</code> <code>targetPort</code> matches the port the app listens on (default <code>3000</code>).</li>
+              <li>If using TLS termination at the ingress, the backend service should target HTTP, not HTTPS.</li>
+            </ul>
+            <p>Check ingress controller logs for more detail:</p>
+            <div class="code-block-wrapper">
+              <pre><code class="language-bash">kubectl logs -n ingress-nginx deployment/ingress-nginx-controller --tail 50</code></pre>
+              <span class="code-lang">bash</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <hr />
+
+      <p style="margin-top:1.5rem">Still stuck? <a href="https://github.com/morgenruf/morgenruf/discussions" target="_blank" rel="noopener">Open a discussion on GitHub</a> or email <a href="mailto:hello@morgenruf.dev">hello@morgenruf.dev</a>.</p>
+
+    </article>
+  </main>
+
+  <!-- ON THIS PAGE -->
+  <aside class="on-this-page">
+    <div class="on-this-page-label">On this page</div>
+    <nav>
+      <ul>
+        <li><a href="#slash-commands">Slash Commands</a></li>
+        <li><a href="#ts-slash-no-response" class="h3">No response</a></li>
+        <li><a href="#ts-slash-permission" class="h3">Permissions error</a></li>
+        <li><a href="#oauth">OAuth / Installation</a></li>
+        <li><a href="#ts-oauth-redirect" class="h3">Redirect mismatch</a></li>
+        <li><a href="#ts-oauth-invalid-token" class="h3">Invalid token</a></li>
+        <li><a href="#database">Database</a></li>
+        <li><a href="#ts-db-connect" class="h3">Connection refused</a></li>
+        <li><a href="#ts-db-migration" class="h3">Migration failures</a></li>
+        <li><a href="#scheduling">Scheduling</a></li>
+        <li><a href="#ts-schedule-timezone" class="h3">Wrong time</a></li>
+        <li><a href="#ts-schedule-missed" class="h3">Standup skipped</a></li>
+        <li><a href="#dashboard">Dashboard</a></li>
+        <li><a href="#ts-dashboard-blank" class="h3">Blank page</a></li>
+        <li><a href="#ts-dashboard-auth" class="h3">Permission denied</a></li>
+        <li><a href="#deployment">Docker / Kubernetes</a></li>
+        <li><a href="#ts-docker-crash" class="h3">CrashLoopBackOff</a></li>
+        <li><a href="#ts-helm-values" class="h3">Helm failures</a></li>
+        <li><a href="#ts-ingress" class="h3">Ingress 502</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+</div>
+
+<script>
+  hljs.highlightAll();
+
+  function toggleFaq(el) {
+    const item = el.parentElement;
+    item.classList.toggle('open');
+  }
+
+  // Open item if anchor matches
+  const hash = window.location.hash;
+  if (hash) {
+    const el = document.querySelector(hash);
+    if (el && el.classList.contains('faq-item')) {
+      el.classList.add('open');
+    }
+  }
+
+  const btn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+  }
+  btn.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+</script>
+</body>
+</html>

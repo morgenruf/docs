@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference — Morgenruf Docs</title>
+  <meta name="description" content="Complete REST API reference for Morgenruf: authentication, endpoints, request parameters, and response formats." />
+  <link rel="stylesheet" href="assets/docs.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-icon">M</div>
+    <span class="logo-name">Morgenruf</span>
+    <span class="logo-docs">/ Docs</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <a href="https://morgenruf.dev" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+    <span>morgenruf.dev</span>
+  </a>
+</header>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Documentation</div>
+    <ul class="sidebar-nav">
+      <li><a href="index.html">
+        <span class="nav-icon">🏠</span> Welcome
+      </a></li>
+      <li><a href="getting-started.html">
+        <span class="nav-icon">🚀</span> Getting Started
+      </a></li>
+      <li><a href="configuration.html">
+        <span class="nav-icon">⚙️</span> Configuration
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Self Hosting</div>
+    <ul class="sidebar-nav">
+      <li><a href="self-hosting.html">
+        <span class="nav-icon">🐳</span> Docker
+      </a></li>
+      <li><a href="helm.html">
+        <span class="nav-icon">☸️</span> Kubernetes / Helm
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Integrations</div>
+    <ul class="sidebar-nav">
+      <li><a href="mcp.html">
+        <span class="nav-icon">🔌</span> MCP
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Reference</div>
+    <ul class="sidebar-nav">
+      <li><a href="api-reference.html" class="active">
+        <span class="nav-icon">📋</span> API Reference
+      </a></li>
+      <li><a href="migration.html">
+        <span class="nav-icon">🔄</span> Migration Guide
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Help</div>
+    <ul class="sidebar-nav">
+      <li><a href="faq.html">
+        <span class="nav-icon">💬</span> FAQ
+      </a></li>
+      <li><a href="troubleshooting.html">
+        <span class="nav-icon">🔧</span> Troubleshooting
+      </a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="docs-main">
+    <article class="docs-content">
+
+      <h1>API Reference</h1>
+      <p class="page-subtitle">Complete reference for every HTTP endpoint exposed by Morgenruf. All API paths are relative to your <code>APP_URL</code> (e.g. <code>https://app.morgenruf.dev</code>).</p>
+
+      <h2 id="authentication">Authentication</h2>
+
+      <p>Morgenruf uses two authentication mechanisms depending on the context:</p>
+
+      <h3 id="auth-session">Session Authentication (Dashboard API)</h3>
+      <p>The <code>/dashboard/api/*</code> endpoints are protected by a server-side session. Sessions are established via the OAuth install flow or by visiting <code>/dashboard/login</code>. The session cookie (<code>mrn_session</code>) is set as <code>HttpOnly; SameSite=Lax; Secure</code> and must be present on every request.</p>
+      <p>To authenticate programmatically, obtain a short-lived login token from the OAuth callback and exchange it at login:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-plaintext">GET /dashboard/login?t=&lt;login_token&gt;</code></pre>
+        <span class="code-lang">http</span>
+      </div>
+      <p>The login token is a base64-encoded HMAC-signed payload (team_id + user_id + timestamp) valid for 5 minutes. It is issued automatically at the end of the OAuth flow.</p>
+
+      <h3 id="auth-bearer">Bearer Token Authentication (MCP API)</h3>
+      <p>The <code>/mcp</code> endpoint uses Bearer token auth. Generate an API key in <strong>Dashboard → Integrations → MCP</strong> and pass it in the <code>Authorization</code> header:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">curl -X POST https://app.morgenruf.dev/mcp \
+  -H "Authorization: Bearer mrn_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"tools/list","params":{},"id":1}'</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+      <p>API keys are stored as SHA-256 hashes. Only the <code>mrn_</code>-prefixed key shown at creation time can be used for auth — it cannot be retrieved again.</p>
+
+      <hr />
+
+      <h2 id="system">System Endpoints</h2>
+
+      <h3 id="get-root">GET /</h3>
+      <p>Returns basic application info. No authentication required.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">curl https://app.morgenruf.dev/</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "name": "morgenruf",
+  "version": "1.0.0",
+  "status": "ok"
+}</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="get-healthz">GET /healthz</h3>
+      <p>Health check endpoint used by load balancers and Kubernetes liveness/readiness probes. Returns <code>200 OK</code> when the app is healthy.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">curl https://app.morgenruf.dev/healthz</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{"status": "ok"}</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <hr />
+
+      <h2 id="oauth-endpoints">OAuth Endpoints</h2>
+
+      <h3 id="get-install">GET /install</h3>
+      <p>Redirects the browser to the Slack OAuth authorisation page. Generates an HMAC-signed <code>state</code> parameter automatically. No authentication required.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-plaintext">GET /install
+→ 302 Redirect to https://slack.com/oauth/v2/authorize?...</code></pre>
+        <span class="code-lang">http</span>
+      </div>
+
+      <h3 id="get-oauth-callback">GET /oauth/callback</h3>
+      <p>Handles the OAuth redirect from Slack. Exchanges the authorization code for a bot token, persists the installation, and redirects to the dashboard. No authentication required.</p>
+
+      <table>
+        <thead><tr><th>Query param</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>code</code></td><td>string</td><td>Authorization code from Slack</td></tr>
+          <tr><td><code>state</code></td><td>string</td><td>HMAC-signed state token from <code>/install</code></td></tr>
+          <tr><td><code>error</code></td><td>string</td><td>Present if the user denied the install</td></tr>
+        </tbody>
+      </table>
+
+      <p>On success: <code>302</code> redirect to <code>/dashboard?t=&lt;login_token&gt;</code>.<br/>
+      On error: <code>400</code> with an HTML error page.</p>
+
+      <hr />
+
+      <h2 id="slack-endpoints">Slack Endpoints</h2>
+
+      <h3 id="post-slack-events">POST /slack/events</h3>
+      <p>Receives all Slack event subscriptions (messages, app mentions, app_uninstalled, etc.) and slash command payloads. Requests are verified with the <code>SLACK_SIGNING_SECRET</code>. This endpoint is called by Slack — you do not call it directly.</p>
+
+      <h3 id="post-slack-interactions">POST /slack/interactions</h3>
+      <p>Receives Slack Block Kit interactive component payloads (button clicks, modal submissions, etc.). Also verified with <code>SLACK_SIGNING_SECRET</code> and called by Slack.</p>
+
+      <hr />
+
+      <h2 id="dashboard-api">Dashboard API</h2>
+
+      <p>All <code>/dashboard/api/*</code> endpoints require session authentication. They return JSON. On auth failure the response is <code>401 {"error": "Unauthorized"}</code>; on missing admin role it is <code>403 {"error": "Admin required"}</code>.</p>
+
+      <h3 id="get-me">GET /dashboard/api/me</h3>
+      <p>Returns the currently authenticated user's profile.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "user_id": "U012AB3CD",
+  "team_id": "T012AB3CD",
+  "team_name": "Acme Corp",
+  "role": "admin"
+}</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="get-standups">GET /dashboard/api/standups</h3>
+      <p>Lists all standup schedules configured for the workspace.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">[
+  {
+    "id": "T012AB3CD",
+    "channel_id": "C012AB3CD",
+    "schedule_time": "09:00",
+    "schedule_tz": "America/New_York",
+    "schedule_days": "mon,tue,wed,thu,fri",
+    "questions": [
+      "What did you complete yesterday?",
+      "What are you working on today?",
+      "Any blockers?"
+    ],
+    "active": true
+  }
+]</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="post-standups">POST /dashboard/api/standups</h3>
+      <p>Creates a new standup schedule. Admin required.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "channel_id": "C012AB3CD",
+  "schedule_time": "09:30",
+  "schedule_tz": "Europe/London",
+  "schedule_days": "mon,tue,wed,thu,fri",
+  "questions": ["What are you shipping today?", "Any blockers?"],
+  "active": true
+}</code></pre>
+        <span class="code-lang">json request body</span>
+      </div>
+      <p>Returns <code>201</code> with the created standup object.</p>
+
+      <h3 id="put-standups">PUT /dashboard/api/standups/&lt;standup_id&gt;</h3>
+      <p>Updates a standup schedule. Admin required. Accepts the same fields as POST; omitted fields are left unchanged.</p>
+
+      <h3 id="delete-standups">DELETE /dashboard/api/standups/&lt;standup_id&gt;</h3>
+      <p>Deletes a standup schedule. Admin required. Returns <code>{"ok": true}</code>.</p>
+
+      <h3 id="get-members">GET /dashboard/api/members</h3>
+      <p>Lists workspace members. Admin required.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">[
+  {
+    "user_id": "U012AB3CD",
+    "real_name": "Alice Smith",
+    "email": "alice@example.com",
+    "tz": "America/Chicago",
+    "active": true,
+    "role": "admin"
+  }
+]</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="post-members-invite">POST /dashboard/api/members/invite</h3>
+      <p>Adds a Slack user to the workspace member list. Admin required.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{ "user_id": "U012AB3CD" }</code></pre>
+        <span class="code-lang">json request body</span>
+      </div>
+      <p>Returns <code>201</code> with the new member object. Returns <code>400</code> if <code>user_id</code> is missing, or <code>500</code> if the Slack API cannot be reached.</p>
+
+      <h3 id="put-member-role">PUT /dashboard/api/members/&lt;user_id&gt;/role</h3>
+      <p>Updates a member's role. Admin required.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{ "role": "admin" }</code></pre>
+        <span class="code-lang">json request body</span>
+      </div>
+      <p>Valid values for <code>role</code>: <code>"admin"</code>, <code>"member"</code>. Returns <code>{"ok": true, "user_id": "...", "role": "..."}</code>.</p>
+
+      <h3 id="get-channels">GET /dashboard/api/channels</h3>
+      <p>Returns a list of public Slack channels the bot has access to. Used to populate the channel selector in the dashboard.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">[
+  { "id": "C012AB3CD", "name": "engineering" },
+  { "id": "C012AB3CE", "name": "design" }
+]</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="get-stats">GET /dashboard/api/stats</h3>
+      <p>Returns high-level participation statistics for the workspace.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "total_members": 12,
+  "submitted_today": 9,
+  "participation_7d_pct": 84,
+  "active_blockers": 2
+}</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="get-reports">GET /dashboard/api/reports</h3>
+      <p>Returns standup responses and participation data for a date range.</p>
+      <table>
+        <thead><tr><th>Query param</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>days</code></td><td><code>7</code></td><td>Number of days to include</td></tr>
+          <tr><td><code>from</code></td><td>—</td><td>Start date <code>YYYY-MM-DD</code></td></tr>
+          <tr><td><code>to</code></td><td>—</td><td>End date <code>YYYY-MM-DD</code></td></tr>
+        </tbody>
+      </table>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "standups": [
+    {
+      "user_id": "U012AB3CD",
+      "standup_date": "2026-04-01",
+      "yesterday": "Shipped the login page.",
+      "today": "Working on password reset.",
+      "blockers": "None",
+      "mood": "😊"
+    }
+  ],
+  "participation": [
+    { "date": "2026-04-01", "submitted": 9, "total": 12, "pct": 75 }
+  ],
+  "total_days": 7
+}</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="get-analytics">GET /dashboard/api/analytics</h3>
+      <p>Returns extended analytics including mood trends and per-member participation breakdown. Accepts the same <code>days</code> query param as <code>/reports</code>.</p>
+
+      <h3 id="get-export-csv">GET /dashboard/api/export/csv</h3>
+      <p>Downloads standup data as a CSV file. Accepts optional <code>from</code> and <code>to</code> query params (<code>YYYY-MM-DD</code>). Returns <code>Content-Type: text/csv</code> with a <code>Content-Disposition: attachment</code> header.</p>
+      <p>Columns: <code>standup_date, user_id, real_name, yesterday, today, blockers, mood, submitted_at</code>.</p>
+
+      <h3 id="get-webhooks">GET /dashboard/api/webhooks</h3>
+      <p>Lists registered webhook endpoints. Admin required.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">[
+  {
+    "id": 1,
+    "url": "https://example.com/hooks/standup",
+    "created_at": "2026-01-15T10:23:00Z"
+  }
+]</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="post-webhooks">POST /dashboard/api/webhooks</h3>
+      <p>Registers a new webhook endpoint. Admin required.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{ "url": "https://example.com/hooks/standup" }</code></pre>
+        <span class="code-lang">json request body</span>
+      </div>
+      <p>Returns <code>201</code> with the created hook object. The URL must be an <code>https://</code> address; private/internal IP ranges are rejected with <code>400</code>.</p>
+
+      <h3 id="delete-webhooks">DELETE /dashboard/api/webhooks/&lt;hook_id&gt;</h3>
+      <p>Removes a webhook endpoint. Admin required. Returns <code>{"ok": true}</code>.</p>
+
+      <h3 id="get-kudos">GET /dashboard/api/kudos</h3>
+      <p>Returns recent kudos given in the workspace.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">[
+  {
+    "from_user": "U012AB3CD",
+    "to_user": "U012AB3CE",
+    "message": "Great work on the release!",
+    "created_at": "2026-04-01T14:00:00Z"
+  }
+]</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="get-kudos-leaderboard">GET /dashboard/api/kudos/leaderboard</h3>
+      <p>Returns a ranked list of members by kudos received. Accepts a <code>days</code> query param (default: <code>30</code>).</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">[
+  { "user_id": "U012AB3CE", "real_name": "Bob Jones", "kudos_received": 7 },
+  { "user_id": "U012AB3CD", "real_name": "Alice Smith", "kudos_received": 4 }
+]</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="get-templates">GET /dashboard/api/templates</h3>
+      <p>Returns the 25 built-in question template sets that can be applied to a standup schedule.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">[
+  {
+    "name": "Classic Standup",
+    "questions": [
+      "What did you complete yesterday?",
+      "What are you working on today?",
+      "Any blockers?"
+    ]
+  }
+]</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="get-schedules">GET /dashboard/api/schedules</h3>
+      <p>Lists all standup schedules (same as <code>/dashboard/api/standups</code>, used by multi-schedule UI).</p>
+
+      <h3 id="post-schedules">POST /dashboard/api/schedules</h3>
+      <p>Creates a new standup schedule. Admin required. Accepts same body as <code>POST /dashboard/api/standups</code>.</p>
+
+      <h3 id="put-schedules">PUT /dashboard/api/schedules/&lt;schedule_id&gt;</h3>
+      <p>Updates a schedule. Admin required.</p>
+
+      <h3 id="delete-schedules">DELETE /dashboard/api/schedules/&lt;schedule_id&gt;</h3>
+      <p>Deletes a schedule. Admin required. Returns <code>{"ok": true}</code>.</p>
+
+      <h3 id="get-rules">GET /dashboard/api/rules</h3>
+      <p>Lists workflow automation rules for the workspace. Admin required.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">[
+  {
+    "id": 1,
+    "trigger": "blocker_reported",
+    "action": "post_to_channel",
+    "action_target": "C012AB3CD",
+    "active": true
+  }
+]</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="post-rules">POST /dashboard/api/rules</h3>
+      <p>Creates a workflow automation rule. Admin required.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "trigger": "participation_below",
+  "trigger_threshold": 50,
+  "action": "dm_admin",
+  "action_target": "U012AB3CD",
+  "active": true
+}</code></pre>
+        <span class="code-lang">json request body</span>
+      </div>
+
+      <h3 id="delete-rules">DELETE /dashboard/api/rules/&lt;rule_id&gt;</h3>
+      <p>Deletes a workflow rule. Admin required. Returns <code>{"ok": true}</code>.</p>
+
+      <h3 id="get-feed-token">POST /dashboard/api/feed-token</h3>
+      <p>Generates (or regenerates) the public standup feed token for the workspace. Admin required. Returns <code>{"token": "abc123..."}</code>.</p>
+
+      <h3 id="delete-feed-token">DELETE /dashboard/api/feed-token</h3>
+      <p>Revokes the public standup feed token. Admin required. Returns <code>{"ok": true}</code>.</p>
+
+      <h3 id="get-feed">GET /feed/&lt;token&gt;</h3>
+      <p>Public read-only standup feed page. No authentication required — access is controlled by the token. Returns an HTML page with the most recent standup responses.</p>
+
+      <hr />
+
+      <h2 id="mcp-api">MCP API</h2>
+
+      <p>The MCP (Model Context Protocol) endpoint exposes standup data to AI assistants (Claude, Cursor, GitHub Copilot). It uses JSON-RPC 2.0 over HTTP and requires a Bearer API key. See the <a href="mcp.html">MCP integration guide</a> for full setup instructions.</p>
+
+      <h3 id="get-mcp">GET /mcp</h3>
+      <p>Public info endpoint. No authentication required. Returns connection metadata and the list of available tool names.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "name": "Morgenruf MCP Server",
+  "version": "1.0.0",
+  "transport": "http",
+  "endpoint": "https://app.morgenruf.dev/mcp",
+  "auth": "Bearer token — generate from your Morgenruf dashboard",
+  "docs": "https://docs.morgenruf.dev/mcp.html",
+  "tools": [
+    "get_standups",
+    "get_today_standups",
+    "get_blockers",
+    "get_participation",
+    "get_members",
+    "search_standups",
+    "get_workspace_summary",
+    "get_mood_summary"
+  ]
+}</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="post-mcp">POST /mcp</h3>
+      <p>MCP JSON-RPC 2.0 endpoint. Requires Bearer authentication.</p>
+
+      <p><strong>Supported methods:</strong></p>
+      <table>
+        <thead><tr><th>Method</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>initialize</code></td><td>MCP handshake — returns protocol version and server capabilities</td></tr>
+          <tr><td><code>tools/list</code></td><td>Returns all available tools with their input schemas</td></tr>
+          <tr><td><code>tools/call</code></td><td>Executes a tool with the given arguments</td></tr>
+          <tr><td><code>ping</code></td><td>Liveness check — returns empty result</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Available tools via <code>tools/call</code>:</strong></p>
+      <table>
+        <thead><tr><th>Tool name</th><th>Description</th><th>Key params</th></tr></thead>
+        <tbody>
+          <tr><td><code>get_standups</code></td><td>Fetch standup responses for a date range</td><td><code>from_date</code>, <code>to_date</code>, <code>user_id</code></td></tr>
+          <tr><td><code>get_today_standups</code></td><td>Get all submissions from today</td><td>—</td></tr>
+          <tr><td><code>get_blockers</code></td><td>Get active blockers reported by the team</td><td><code>days</code></td></tr>
+          <tr><td><code>get_participation</code></td><td>Participation statistics</td><td><code>days</code></td></tr>
+          <tr><td><code>get_members</code></td><td>List all workspace members</td><td>—</td></tr>
+          <tr><td><code>search_standups</code></td><td>Full-text search across standup responses</td><td><code>query</code>, <code>days</code></td></tr>
+          <tr><td><code>get_workspace_summary</code></td><td>High-level workspace health snapshot</td><td>—</td></tr>
+          <tr><td><code>get_mood_summary</code></td><td>Team mood trends over time</td><td><code>days</code></td></tr>
+        </tbody>
+      </table>
+
+      <p>Example <code>tools/call</code> request:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "get_blockers",
+    "arguments": { "days": 7 }
+  },
+  "id": 1
+}</code></pre>
+        <span class="code-lang">json request body</span>
+      </div>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "jsonrpc": "2.0",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "[{\"user_id\": \"U012AB3CD\", \"date\": \"2026-04-01\", \"blockers\": \"Waiting on PR review\"}]"
+      }
+    ]
+  },
+  "id": 1
+}</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="mcp-keys">GET /dashboard/api/mcp/keys</h3>
+      <p>Lists MCP API keys for the workspace (prefixes only — full keys are never returned after creation). Admin required.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">[
+  {
+    "id": 1,
+    "name": "Claude Desktop",
+    "key_prefix": "mrn_a1b2",
+    "created_at": "2026-03-10T09:00:00Z",
+    "last_used_at": "2026-04-01T08:45:00Z",
+    "active": true
+  }
+]</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="post-mcp-keys">POST /dashboard/api/mcp/keys</h3>
+      <p>Generates a new MCP API key. Admin required. Optionally accepts <code>{"name": "My Key"}</code> in the request body.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "id": 2,
+  "name": "Cursor",
+  "key": "mrn_a1b2c3d4e5f6g7h8",
+  "key_prefix": "mrn_a1b2",
+  "created_at": "2026-04-05T12:00:00Z"
+}</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+      <p>The full <code>key</code> is only returned once at creation time. Store it securely.</p>
+
+      <h3 id="delete-mcp-keys">DELETE /dashboard/api/mcp/keys/&lt;key_id&gt;</h3>
+      <p>Revokes an MCP API key. Admin required. Returns <code>{"ok": true}</code>.</p>
+
+      <h3 id="get-mcp-config">GET /dashboard/api/mcp-config</h3>
+      <p>Returns ready-to-use MCP configuration snippets for Claude Desktop and Cursor.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "claude_desktop": {
+    "mcpServers": {
+      "morgenruf": {
+        "command": "npx",
+        "args": ["mcp-remote", "https://app.morgenruf.dev/mcp"],
+        "env": { "MORGENRUF_API_KEY": "mrn_..." }
+      }
+    }
+  }
+}</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <hr />
+
+      <h2 id="error-codes">Error Codes</h2>
+
+      <p>All REST endpoints use standard HTTP status codes:</p>
+
+      <table>
+        <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>200</code></td><td>Success</td></tr>
+          <tr><td><code>201</code></td><td>Resource created</td></tr>
+          <tr><td><code>302</code></td><td>Redirect (OAuth flows)</td></tr>
+          <tr><td><code>400</code></td><td>Bad request — missing or invalid parameter</td></tr>
+          <tr><td><code>401</code></td><td>Unauthorized — no session or invalid Bearer token</td></tr>
+          <tr><td><code>403</code></td><td>Forbidden — authenticated but not an admin</td></tr>
+          <tr><td><code>500</code></td><td>Internal server error — check application logs</td></tr>
+          <tr><td><code>503</code></td><td>Service unavailable — database unreachable</td></tr>
+        </tbody>
+      </table>
+
+      <p>Error responses from the Dashboard API always include a JSON body:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{ "error": "Human-readable description of the problem" }</code></pre>
+        <span class="code-lang">json</span>
+      </div>
+
+      <p>MCP JSON-RPC errors follow the JSON-RPC 2.0 error object format:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "jsonrpc": "2.0",
+  "error": {
+    "code": -32001,
+    "message": "Unauthorized — provide a valid Bearer API key from your Morgenruf dashboard"
+  },
+  "id": null
+}</code></pre>
+        <span class="code-lang">json</span>
+      </div>
+
+      <p>Common MCP error codes:</p>
+      <table>
+        <thead><tr><th>Code</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>-32001</code></td><td>Unauthorized — invalid or missing Bearer token</td></tr>
+          <tr><td><code>-32601</code></td><td>Method not found</td></tr>
+          <tr><td><code>-32603</code></td><td>Internal error — tool execution failed</td></tr>
+        </tbody>
+      </table>
+
+    </article>
+  </main>
+
+  <!-- ON THIS PAGE -->
+  <aside class="on-this-page">
+    <div class="on-this-page-label">On this page</div>
+    <nav>
+      <ul>
+        <li><a href="#authentication">Authentication</a></li>
+        <li><a href="#auth-session" class="h3">Session auth</a></li>
+        <li><a href="#auth-bearer" class="h3">Bearer token</a></li>
+        <li><a href="#system">System Endpoints</a></li>
+        <li><a href="#get-root" class="h3">GET /</a></li>
+        <li><a href="#get-healthz" class="h3">GET /healthz</a></li>
+        <li><a href="#oauth-endpoints">OAuth Endpoints</a></li>
+        <li><a href="#get-install" class="h3">GET /install</a></li>
+        <li><a href="#get-oauth-callback" class="h3">GET /oauth/callback</a></li>
+        <li><a href="#slack-endpoints">Slack Endpoints</a></li>
+        <li><a href="#dashboard-api">Dashboard API</a></li>
+        <li><a href="#get-me" class="h3">GET /api/me</a></li>
+        <li><a href="#get-standups" class="h3">GET /api/standups</a></li>
+        <li><a href="#get-members" class="h3">GET /api/members</a></li>
+        <li><a href="#get-channels" class="h3">GET /api/channels</a></li>
+        <li><a href="#get-stats" class="h3">GET /api/stats</a></li>
+        <li><a href="#get-reports" class="h3">GET /api/reports</a></li>
+        <li><a href="#get-analytics" class="h3">GET /api/analytics</a></li>
+        <li><a href="#get-export-csv" class="h3">GET /api/export/csv</a></li>
+        <li><a href="#get-webhooks" class="h3">GET /api/webhooks</a></li>
+        <li><a href="#get-kudos" class="h3">GET /api/kudos</a></li>
+        <li><a href="#get-templates" class="h3">GET /api/templates</a></li>
+        <li><a href="#get-schedules" class="h3">GET /api/schedules</a></li>
+        <li><a href="#get-rules" class="h3">GET /api/rules</a></li>
+        <li><a href="#mcp-api">MCP API</a></li>
+        <li><a href="#get-mcp" class="h3">GET /mcp</a></li>
+        <li><a href="#post-mcp" class="h3">POST /mcp</a></li>
+        <li><a href="#mcp-keys" class="h3">MCP API keys</a></li>
+        <li><a href="#error-codes">Error Codes</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+</div>
+
+<script>
+  hljs.highlightAll();
+
+  const btn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+  }
+  btn.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+</script>
+</body>
+</html>

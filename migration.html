@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Migration Guide — Morgenruf Docs</title>
+  <meta name="description" content="How to run and manage database migrations in Morgenruf, upgrade between versions, and roll back if needed." />
+  <link rel="stylesheet" href="assets/docs.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-icon">M</div>
+    <span class="logo-name">Morgenruf</span>
+    <span class="logo-docs">/ Docs</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <a href="https://morgenruf.dev" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+    <span>morgenruf.dev</span>
+  </a>
+</header>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Documentation</div>
+    <ul class="sidebar-nav">
+      <li><a href="index.html">
+        <span class="nav-icon">🏠</span> Welcome
+      </a></li>
+      <li><a href="getting-started.html">
+        <span class="nav-icon">🚀</span> Getting Started
+      </a></li>
+      <li><a href="configuration.html">
+        <span class="nav-icon">⚙️</span> Configuration
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Self Hosting</div>
+    <ul class="sidebar-nav">
+      <li><a href="self-hosting.html">
+        <span class="nav-icon">🐳</span> Docker
+      </a></li>
+      <li><a href="helm.html">
+        <span class="nav-icon">☸️</span> Kubernetes / Helm
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Integrations</div>
+    <ul class="sidebar-nav">
+      <li><a href="mcp.html">
+        <span class="nav-icon">🔌</span> MCP
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Reference</div>
+    <ul class="sidebar-nav">
+      <li><a href="api-reference.html">
+        <span class="nav-icon">📋</span> API Reference
+      </a></li>
+      <li><a href="migration.html" class="active">
+        <span class="nav-icon">🔄</span> Migration Guide
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Help</div>
+    <ul class="sidebar-nav">
+      <li><a href="faq.html">
+        <span class="nav-icon">💬</span> FAQ
+      </a></li>
+      <li><a href="troubleshooting.html">
+        <span class="nav-icon">🔧</span> Troubleshooting
+      </a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="docs-main">
+    <article class="docs-content">
+
+      <h1>Migration Guide</h1>
+      <p class="page-subtitle">How database migrations work in Morgenruf, how to upgrade between versions, and how to roll back when something goes wrong.</p>
+
+      <h2 id="how-migrations-work">How Migrations Work</h2>
+
+      <p>Morgenruf uses a <strong>custom raw-SQL migration runner</strong> — not Alembic or Flask-Migrate. Migrations are plain <code>.sql</code> files stored in <code>app/migrations/</code> and are executed in alphabetical (filename) order.</p>
+
+      <p>The runner tracks which migrations have been applied in a <code>schema_migrations</code> table that is created automatically on the first run:</p>
+
+      <div class="code-block-wrapper">
+        <pre><code class="language-sql">CREATE TABLE IF NOT EXISTS schema_migrations (
+    filename TEXT PRIMARY KEY,
+    applied_at TIMESTAMPTZ DEFAULT NOW()
+);</code></pre>
+        <span class="code-lang">sql</span>
+      </div>
+
+      <p>On each startup (or manual run), the runner:</p>
+      <ol>
+        <li>Creates the <code>schema_migrations</code> table if it doesn't exist.</li>
+        <li>Collects all <code>*.sql</code> files in <code>app/migrations/</code>, sorted by filename.</li>
+        <li>Skips files that already appear in <code>schema_migrations</code>.</li>
+        <li>Executes each new file inside a transaction — if the SQL fails, the transaction is rolled back and startup aborts.</li>
+        <li>Records the filename in <code>schema_migrations</code> on success.</li>
+      </ol>
+
+      <p>Each migration file is idempotent at the runner level: it is applied exactly once. The SQL inside may or may not use <code>IF NOT EXISTS</code> guards.</p>
+
+      <h2 id="migration-files">Migration Files</h2>
+
+      <p>All 15 migration files shipped with Morgenruf v1.0.0, in application order:</p>
+
+      <table>
+        <thead><tr><th>File</th><th>Introduced in</th><th>What it adds</th></tr></thead>
+        <tbody>
+          <tr><td><code>001_initial.sql</code></td><td>v0.1.0</td><td>Core tables: <code>installations</code>, <code>workspace_config</code>, <code>members</code>, <code>standups</code></td></tr>
+          <tr><td><code>002_standup_config.sql</code></td><td>v0.2.0</td><td>Extended workspace configuration columns</td></tr>
+          <tr><td><code>003_webhooks.sql</code></td><td>v0.2.0</td><td><code>webhooks</code> table for outbound event delivery</td></tr>
+          <tr><td><code>004_edit_window.sql</code></td><td>v0.2.0</td><td><code>edit_window_minutes</code> column on <code>workspace_config</code></td></tr>
+          <tr><td><code>005_mood.sql</code></td><td>v0.3.0</td><td><code>mood</code> column on <code>standups</code></td></tr>
+          <tr><td><code>006_standup_schedules.sql</code></td><td>v0.4.0</td><td><code>standup_schedules</code> table for multiple schedules per workspace</td></tr>
+          <tr><td><code>007_autolink.sql</code></td><td>v0.4.0</td><td><code>autolink_patterns</code> table for Jira / GitHub / Linear auto-linking</td></tr>
+          <tr><td><code>008_rbac.sql</code></td><td>v0.4.0</td><td><code>role</code> column on <code>members</code> for admin/member RBAC</td></tr>
+          <tr><td><code>009_ai_summary.sql</code></td><td>v0.4.0</td><td><code>ai_summaries</code> table for AI-generated standup digests</td></tr>
+          <tr><td><code>010_kudos.sql</code></td><td>v0.4.0</td><td><code>kudos</code> table for peer recognition</td></tr>
+          <tr><td><code>011_workflow_rules.sql</code></td><td>v0.4.0</td><td><code>workflow_rules</code> table for automation triggers and actions</td></tr>
+          <tr><td><code>012_platforms.sql</code></td><td>v0.4.0</td><td><code>platform</code> column on <code>installations</code> for Google Chat support</td></tr>
+          <tr><td><code>013_feed_token.sql</code></td><td>v0.4.0</td><td><code>feed_token</code> column on <code>workspace_config</code> for public standup feeds</td></tr>
+          <tr><td><code>014_manager_email.sql</code></td><td>v0.4.0</td><td><code>manager_email</code> column on <code>workspace_config</code> for daily digest emails</td></tr>
+          <tr><td><code>015_mcp_api_keys.sql</code></td><td>v1.0.0</td><td><code>mcp_api_keys</code> table for MCP Bearer token authentication</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="running-migrations">Running Migrations</h2>
+
+      <h3 id="automatic-on-startup">Automatic on startup</h3>
+      <p>Migrations run automatically every time the application starts. No manual steps are required for normal deployments — just pull the new image and restart.</p>
+
+      <h3 id="manual-run">Manual run</h3>
+      <p>To run migrations without starting the full application (useful for CI or pre-flight checks), pass the <code>migrate</code> command to the container:</p>
+
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">docker run --rm \
+  -e DATABASE_URL=postgresql://user:pass@host:5432/morgenruf \
+  ghcr.io/morgenruf/morgenruf:latest migrate</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+
+      <p>With Docker Compose, you can run a one-off migration container before starting the app:</p>
+
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">docker compose run --rm app migrate</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+
+      <h3 id="kubernetes-init-container">Kubernetes init container</h3>
+      <p>For Kubernetes deployments it is recommended to run migrations as an init container so they complete before the main pod starts serving traffic. Add this to your <code>values.yaml</code>:</p>
+
+      <div class="code-block-wrapper">
+        <pre><code class="language-yaml">initContainers:
+  - name: migrate
+    image: ghcr.io/morgenruf/morgenruf:latest
+    command: ["python", "-m", "src.migrate"]
+    env:
+      - name: DATABASE_URL
+        valueFrom:
+          secretKeyRef:
+            name: morgenruf-secrets
+            key: DATABASE_URL</code></pre>
+        <span class="code-lang">yaml</span>
+      </div>
+
+      <h3 id="checking-applied-migrations">Checking applied migrations</h3>
+      <p>To see which migrations have been applied, query the <code>schema_migrations</code> table directly:</p>
+
+      <div class="code-block-wrapper">
+        <pre><code class="language-sql">SELECT filename, applied_at
+FROM schema_migrations
+ORDER BY applied_at;</code></pre>
+        <span class="code-lang">sql</span>
+      </div>
+
+      <h2 id="upgrading">Upgrading Between Versions</h2>
+
+      <p>Morgenruf follows <a href="https://semver.org" target="_blank" rel="noopener">Semantic Versioning</a>. The general upgrade process is:</p>
+
+      <ol>
+        <li><strong>Back up your database</strong> before any upgrade (see <a href="#backup-and-restore">Backup &amp; Restore</a> below).</li>
+        <li>Pull the new Docker image tag.</li>
+        <li>Restart the container — migrations run automatically.</li>
+        <li>Verify the app is healthy with <code>GET /healthz</code>.</li>
+      </ol>
+
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash"># Pull the target version
+docker pull ghcr.io/morgenruf/morgenruf:1.0.0
+
+# Restart (docker-compose)
+docker compose up -d
+
+# Verify
+curl https://yourapp.example.com/healthz</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+
+      <p>For Kubernetes / Helm:</p>
+
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">helm upgrade morgenruf ./helm/morgenruf \
+  --set image.tag=1.0.0 \
+  --reuse-values</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+
+      <h2 id="rollback">Rollback Procedures</h2>
+
+      <p>The migration runner does <strong>not</strong> provide automatic down-migrations. SQL schema changes (adding tables, adding columns) are generally safe and backwards-compatible, so rolling back the application image is usually sufficient.</p>
+
+      <p><strong>To roll back to a previous version:</strong></p>
+
+      <ol>
+        <li>Roll back the application image to the previous tag.</li>
+        <li>If the new migrations added columns that the old code doesn't know about, that is fine — the old code ignores unknown columns.</li>
+        <li>If a migration was destructive (dropped a column or table), restore from backup (see below).</li>
+      </ol>
+
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash"># Roll back image (docker-compose)
+docker compose stop app
+docker compose up -d --no-deps app  # after editing image tag in docker-compose.yml
+
+# Or with Helm
+helm rollback morgenruf</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+
+      <p>To prevent a migration from re-running after a rollback, do <strong>not</strong> delete its row from <code>schema_migrations</code>. Leave it in place so the runner continues to skip it.</p>
+
+      <h3 id="manual-rollback">Manually reverting a migration</h3>
+      <p>If you need to undo a migration (e.g. drop a table added by mistake), write the inverse SQL manually, run it, and then delete the migration's row from <code>schema_migrations</code>:</p>
+
+      <div class="code-block-wrapper">
+        <pre><code class="language-sql">-- Example: undo 015_mcp_api_keys.sql
+DROP TABLE IF EXISTS mcp_api_keys;
+DELETE FROM schema_migrations WHERE filename = '015_mcp_api_keys.sql';</code></pre>
+        <span class="code-lang">sql</span>
+      </div>
+
+      <h2 id="backup-and-restore">Backup &amp; Restore</h2>
+
+      <p>Always back up before upgrading. Use <code>pg_dump</code> for a consistent snapshot:</p>
+
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash"># Dump
+pg_dump "$DATABASE_URL" --format=custom --file=morgenruf_backup_$(date +%Y%m%d).dump
+
+# Restore
+pg_restore --clean --dbname "$DATABASE_URL" morgenruf_backup_20260405.dump</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+
+      <p>In Kubernetes, you can run a one-off pod:</p>
+
+      <div class="code-block-wrapper">
+        <pre><code class="language-bash">kubectl run pg-dump --rm -it --restart=Never \
+  --image=postgres:16 \
+  --env="PGPASSWORD=yourpassword" \
+  -- pg_dump -h db-host -U user morgenruf \
+     --format=custom > morgenruf_backup.dump</code></pre>
+        <span class="code-lang">bash</span>
+      </div>
+
+      <h2 id="version-notes">Version-Specific Migration Notes</h2>
+
+      <h3 id="v1-0-0">v1.0.0 (2026-04-05)</h3>
+      <p><strong>New migration:</strong> <code>015_mcp_api_keys.sql</code> — adds the <code>mcp_api_keys</code> table. No data changes; fully additive.</p>
+      <p>If you were using the MCP server from v0.4.0 without API keys (e.g. in a private deployment with no auth), you must generate an API key in <strong>Dashboard → Integrations → MCP</strong> after upgrading. Unauthenticated MCP requests now return <code>401</code>.</p>
+
+      <h3 id="v0-4-0">v0.4.0 (2026-04-05)</h3>
+      <p><strong>New migrations:</strong> <code>006</code> through <code>014</code> — ten additive migrations adding schedules, RBAC, AI summaries, kudos, workflow rules, Google Chat platform support, feed tokens, manager email, and autolink patterns.</p>
+      <p><strong>Breaking change — RBAC:</strong> Migration <code>008_rbac.sql</code> adds a <code>role</code> column to the <code>members</code> table. The dashboard now enforces admin-only access for configuration changes. The user who originally installed the app is automatically granted the <code>admin</code> role during the OAuth callback. If you run into permission errors after upgrading, run:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-sql">UPDATE members SET role = 'admin'
+WHERE user_id = '&lt;your_slack_user_id&gt;'
+  AND team_id = '&lt;your_team_id&gt;';</code></pre>
+        <span class="code-lang">sql</span>
+      </div>
+      <p><strong>Multiple schedules:</strong> Migration <code>006_standup_schedules.sql</code> introduces a new <code>standup_schedules</code> table. Existing workspace configurations in <code>workspace_config</code> continue to work; the new table is used by the multi-schedule UI introduced in v0.4.0.</p>
+
+      <h3 id="v0-3-0">v0.3.0 (2026-03-20)</h3>
+      <p><strong>New migration:</strong> <code>005_mood.sql</code> — adds a <code>mood</code> column to <code>standups</code>. Existing standup rows will have <code>mood = NULL</code>, which is treated as "not answered" by the analytics dashboard.</p>
+
+      <h3 id="v0-2-0">v0.2.0 (2026-03-01)</h3>
+      <p><strong>New migrations:</strong> <code>002_standup_config.sql</code>, <code>003_webhooks.sql</code>, <code>004_edit_window.sql</code> — additive changes only.</p>
+      <p>The web dashboard is introduced in this release. After upgrading, set the <code>SESSION_SECRET</code> environment variable if you haven't already — sessions will not persist without it. See <a href="configuration.html#environment-variables">Configuration → Environment Variables</a>.</p>
+
+      <h3 id="v0-1-0">v0.1.0 (2026-02-15)</h3>
+      <p>Initial release. <code>001_initial.sql</code> creates all core tables from scratch. Requires PostgreSQL 13 or newer.</p>
+
+      <h2 id="writing-migrations">Writing Custom Migrations</h2>
+
+      <p>If you have forked Morgenruf or need to add custom schema changes, drop a new <code>.sql</code> file in <code>app/migrations/</code>. Name it with the next available three-digit prefix (e.g. <code>016_my_change.sql</code>) so it sorts after all existing migrations.</p>
+
+      <p>Guidelines:</p>
+      <ul>
+        <li>Keep each file focused on a single logical change.</li>
+        <li>Use <code>IF NOT EXISTS</code> / <code>IF EXISTS</code> guards where possible to make the SQL safe to inspect manually.</li>
+        <li>Never modify existing migration files — add a new one instead.</li>
+        <li>Test your migration against a copy of production data before deploying.</li>
+      </ul>
+
+      <div class="code-block-wrapper">
+        <pre><code class="language-sql">-- 016_my_feature.sql
+ALTER TABLE members ADD COLUMN IF NOT EXISTS department TEXT;
+CREATE INDEX IF NOT EXISTS members_dept_idx ON members(team_id, department);</code></pre>
+        <span class="code-lang">sql</span>
+      </div>
+
+    </article>
+  </main>
+
+  <!-- ON THIS PAGE -->
+  <aside class="on-this-page">
+    <div class="on-this-page-label">On this page</div>
+    <nav>
+      <ul>
+        <li><a href="#how-migrations-work">How Migrations Work</a></li>
+        <li><a href="#migration-files">Migration Files</a></li>
+        <li><a href="#running-migrations">Running Migrations</a></li>
+        <li><a href="#automatic-on-startup" class="h3">Automatic on startup</a></li>
+        <li><a href="#manual-run" class="h3">Manual run</a></li>
+        <li><a href="#kubernetes-init-container" class="h3">Kubernetes init container</a></li>
+        <li><a href="#checking-applied-migrations" class="h3">Checking applied</a></li>
+        <li><a href="#upgrading">Upgrading</a></li>
+        <li><a href="#rollback">Rollback Procedures</a></li>
+        <li><a href="#manual-rollback" class="h3">Manual revert</a></li>
+        <li><a href="#backup-and-restore">Backup &amp; Restore</a></li>
+        <li><a href="#version-notes">Version Notes</a></li>
+        <li><a href="#v1-0-0" class="h3">v1.0.0</a></li>
+        <li><a href="#v0-4-0" class="h3">v0.4.0</a></li>
+        <li><a href="#v0-3-0" class="h3">v0.3.0</a></li>
+        <li><a href="#v0-2-0" class="h3">v0.2.0</a></li>
+        <li><a href="#v0-1-0" class="h3">v0.1.0</a></li>
+        <li><a href="#writing-migrations">Writing Migrations</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+</div>
+
+<script>
+  hljs.highlightAll();
+
+  const btn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+  }
+  btn.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+</script>
+</body>
+</html>

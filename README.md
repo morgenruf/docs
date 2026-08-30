@@ -48,3 +48,7 @@ Docs are automatically deployed to GitHub Pages via `.github/workflows/pages.yml
 Found a mistake or want to improve the docs? PRs welcome! Please keep the existing HTML/CSS style consistent.
 
 See also [github.com/morgenruf/morgenruf/blob/main/CONTRIBUTING.md](https://github.com/morgenruf/morgenruf/blob/main/CONTRIBUTING.md).
+
+---
+
+<sub>Part of [Morgenruf](https://github.com/morgenruf/morgenruf), the self-hosted Slack standup bot &middot; [morgenruf.dev](https://morgenruf.dev) &middot; [docs](https://docs.morgenruf.dev) &middot; [status](https://status.morgenruf.dev)</sub>

@@ -238,6 +238,62 @@
         <p>The mood question (😊/😐/😔) is tracked in the Analytics tab. The edit window (configurable in the dashboard) lets users update their answers after submitting.</p>
       </div>
 
+      <h2 id="turn-on-more">Turn On the Rest</h2>
+      <p>Standups are on from the start. Two more modules are a switch away in
+      the dashboard, and one needs a scope you may not have granted yet.</p>
+
+      <h3>Kudos</h3>
+      <p>On by default. Anyone can DM the bot
+      <code>kudos @teammate nice work on the deploy</code>, or use
+      <code>/kudos</code>. Each person gets a daily allowance that resets at
+      midnight in their own timezone.</p>
+
+      <p><strong>Using the Morgenruf icon as your kudos token.</strong> The
+      dashboard always shows it. To make Slack show it too:</p>
+      <ol class="steps">
+        <li>
+          <div class="step-content">
+            <h3>Download the icon</h3>
+            <p>In the dashboard, open <strong>Kudos</strong> and find
+            <em>The token your team gives</em>. Click the download link.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Add it to Slack</h3>
+            <p>In Slack, go to <strong>Customize workspace &rsaquo; Add custom emoji</strong>,
+            upload the file, and name it <code>morgenruf</code>.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Point the token at it</h3>
+            <p>Back in the dashboard, leave the token field as
+            <code>:morgenruf:</code> and save.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout warning">
+        <span class="callout-icon">⚠️</span>
+        <p>Do the Slack import <em>before</em> saving the token. Until that emoji
+        exists in your workspace, Slack renders <code>:morgenruf:</code> as
+        literal text in every kudos message. If you would rather not import it,
+        set the field to any plain emoji instead.</p>
+      </div>
+
+      <h3>Coffee chats</h3>
+      <p>Off until you turn it on, because it needs Slack scopes the standup app
+      does not: <code>mpim:write</code>, <code>mpim:history</code> and
+      <code>users.profile:read</code>. If you installed Morgenruf before these
+      existed, reinstall from the dashboard to grant them — the module stays
+      dark rather than failing halfway through a round.</p>
+      <p>Then pick a channel and a cadence. Everyone in it gets paired and
+      introduced in a group DM; when the count is odd, one group of three forms
+      so nobody sits out. Three days later the bot nudges pairs who have not
+      met, and on day six it asks whether they did. That answer is what the
+      attendance view on the Coffee chats page is built from.</p>
+
       <h2 id="self-hosting">Prefer to Self-Host?</h2>
       <p>If you'd rather run Morgenruf on your own infrastructure, check out the dedicated guides:</p>
       <div class="cards-grid" style="margin-top:0.75rem">
@@ -269,6 +325,7 @@ helm install morgenruf morgenruf/morgenruf</code></pre>
         <li><a href="#what-happens-next">What Happens Next</a></li>
         <li><a href="#invite-to-channel">Invite to Channel</a></li>
         <li><a href="#first-standup">Your First Standup</a></li>
+        <li><a href="#turn-on-more">Turn On the Rest</a></li>
         <li><a href="#self-hosting">Self-Hosting</a></li>
       </ul>
     </nav>

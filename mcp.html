@@ -93,7 +93,7 @@
       <p>
         The <strong>Model Context Protocol (MCP)</strong> is an open standard that lets AI assistants — including
         Claude, Cursor, and GitHub Copilot — query external data sources directly during a conversation.
-        Morgenruf ships a built-in MCP server that exposes your standup data to any compatible AI tool.
+        Morgenruf ships a built-in MCP server that exposes your standups, coffee chats, kudos and insights to any compatible AI tool.
       </p>
       <p>
         Once configured, you can ask your AI assistant questions like:
@@ -116,7 +116,8 @@
       </div>
 
       <h2 id="available-tools">Available Tools</h2>
-      <p>The Morgenruf MCP server exposes 8 tools to AI assistants:</p>
+      <p>The Morgenruf MCP server exposes 17 tools to AI assistants. The standup tools are always available; the rest appear only for workspaces that have the matching module switched on, so <code>tools/list</code> reflects what your workspace actually runs.</p>
+      <h3>Standups</h3>
 
       <table class="docs-table">
         <thead>
@@ -166,6 +167,78 @@
             <td><code>get_mood_summary</code></td>
             <td>Team mood trends over time</td>
             <td><code>team_id</code>, <code>days</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Kudos</h3>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Tool</th><th>Description</th><th>Parameters</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>get_kudos_leaderboard</code></td>
+            <td>Who has been recognised most, and who gives out the most recognition</td>
+            <td><code>days</code></td>
+          </tr>
+          <tr>
+            <td><code>get_recent_kudos</code></td>
+            <td>Recent kudos with sender, recipient and message</td>
+            <td><code>limit</code></td>
+          </tr>
+          <tr>
+            <td><code>get_kudos_settings</code></td>
+            <td>The workspace token and the daily allowance per person</td>
+            <td>none</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Coffee chats</h3>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Tool</th><th>Description</th><th>Parameters</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>list_coffee_chat_programs</code></td>
+            <td>Programmes in the workspace: channel, cadence, pool size, rounds run</td>
+            <td>none</td>
+          </tr>
+          <tr>
+            <td><code>get_coffee_chat_rounds</code></td>
+            <td>Recent rounds with attendance split into met, did not meet, no reply and not delivered</td>
+            <td><code>program_id</code>, <code>limit</code></td>
+          </tr>
+          <tr>
+            <td><code>get_coffee_chat_attendance</code></td>
+            <td>Per person across recent rounds, ordered by who is drifting away</td>
+            <td><code>program_id</code>, <code>rounds</code></td>
+          </tr>
+          <tr>
+            <td><code>get_coffee_chat_pairs</code></td>
+            <td>Who was paired with whom in one round, and what became of each pairing</td>
+            <td><code>round_id</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Insights</h3>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Tool</th><th>Description</th><th>Parameters</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>get_stuck_blockers</code></td>
+            <td>Blockers raised on several consecutive working days by the same person. Weekends do not break a run.</td>
+            <td><code>days</code>, <code>min_days</code></td>
+          </tr>
+          <tr>
+            <td><code>get_unrecognised_contributors</code></td>
+            <td>People who answer standup consistently and have received no kudos at all</td>
+            <td><code>days</code>, <code>min_standups</code></td>
           </tr>
         </tbody>
       </table>
@@ -265,7 +338,7 @@
         <li>
           <div class="step-content">
             <h3>Verify the connection</h3>
-            <p>Look for the <strong>🔌</strong> icon in Claude's interface. Click it to see a list of available tools — you should see all 8 Morgenruf tools listed there.</p>
+            <p>Look for the <strong>🔌</strong> icon in Claude's interface. Click it to see a list of available tools — you should see the Morgenruf tools listed there.</p>
           </div>
         </li>
       </ol>
@@ -352,6 +425,17 @@
         <li>"Summarize yesterday's standups"</li>
         <li>"Which team member has been most blocked recently?"</li>
         <li>"What's the team mood trend this month?"</li>
+      </ul>
+
+      <p>The cross-signal questions are the ones worth having. These need two
+      sources at once, so no single dashboard page answers them:</p>
+
+      <ul>
+        <li>"Who has been blocked on the same thing for days running?"</li>
+        <li>"Who answers standup every day and has never been thanked?"</li>
+        <li>"Which coffee chat pairings never actually happened?"</li>
+        <li>"Who has stopped turning up to their coffee chats?"</li>
+        <li>"Who gives out the most recognition on this team?"</li>
       </ul>
 
       <div class="callout tip">

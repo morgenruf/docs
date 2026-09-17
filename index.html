@@ -91,9 +91,10 @@
 
       <h2 id="what-is-morgenruf">What is Morgenruf?</h2>
       <p>
-        Morgenruf is an open-source Slack bot that automates daily async standups for your engineering team.
-        It DMs each team member with your configured standup questions, collects their responses, and posts
-        a clean summary to your designated channel — all at a time you choose.
+        Morgenruf is an open-source Slack app for the rituals a distributed team runs on. It started as async
+        standups: it DMs each team member with your configured questions, collects their responses, and posts
+        a clean summary to your designated channel, all at a time you choose. It now also runs random coffee
+        chats, peer recognition, and the insights that need more than one of those signals at once.
       </p>
       <p>
         The name comes from German: <em>Morgenruf</em> means "morning call." Configure everything via the
@@ -118,6 +119,25 @@
         <li>Free hosted version — no credit card required</li>
         <li>Open-source: self-host with Docker or Kubernetes / Helm</li>
         <li>Lightweight &amp; fast — runs on a single container</li>
+      </ul>
+
+      <h2 id="modules">Modules</h2>
+      <p>
+        Four modules over one deployment and one database. Each owns its migrations, Slack handlers,
+        dashboard pages and scheduled jobs, and any of them can be switched off without touching the rest.
+      </p>
+      <ul class="feature-list">
+        <li><strong>Standups</strong> — the async daily standup above. On by default.</li>
+        <li><strong>Coffee chats</strong> — random 1:1 pairings from a channel on a cadence, history-aware so
+          the same two people are not matched twice running. Odd numbers form one group of three so nobody
+          sits out. The bot nudges pairs who have not met and asks whether they did, and the dashboard splits
+          the answer four ways: met, did not meet, no reply, and not delivered. Off until you grant the extra
+          Slack scopes it needs.</li>
+        <li><strong>Kudos</strong> — <code>kudos @teammate nice work on the deploy</code>, with a daily
+          allowance that resets at midnight in each person's own timezone. Leaderboards for who is recognised
+          and for who does the recognising. On by default.</li>
+        <li><strong>Insights</strong> — the questions that need two signals: a blocker nobody has cleared in
+          days, or someone who answers every standup and is thanked by nobody. On by default.</li>
       </ul>
 
       <h2 id="quick-start">Quick Start</h2>
@@ -193,6 +213,7 @@
       <ul>
         <li><a href="#what-is-morgenruf">What is Morgenruf?</a></li>
         <li><a href="#key-features">Key Features</a></li>
+        <li><a href="#modules">Modules</a></li>
         <li><a href="#quick-start">Quick Start</a></li>
         <li><a href="#quick-links">Quick Links</a></li>
         <li><a href="#add-to-slack">Add to Slack</a></li>

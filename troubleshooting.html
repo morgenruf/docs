@@ -47,6 +47,15 @@
         <span class="nav-icon">⚙️</span> Configuration
       </a></li>
     </ul>
+    <div class="sidebar-section-label">Features</div>
+    <ul class="sidebar-nav">
+      <li><a href="member-profile.html">
+        <span class="nav-icon">🪪</span> Member Profile
+      </a></li>
+      <li><a href="celebrations.html">
+        <span class="nav-icon">🎂</span> Celebrations
+      </a></li>
+    </ul>
     <div class="sidebar-section-label">Self Hosting</div>
     <ul class="sidebar-nav">
       <li><a href="self-hosting.html">
@@ -251,6 +260,43 @@
 
       </div>
 
+      <h2 id="celebrations">Celebrations</h2>
+
+      <div class="faq-list">
+
+        <div class="faq-item" id="ts-celebrations-reaction">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Celebration posts go out without the 🎉
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>The reaction needs the <code>reactions:write</code> scope, and workspaces that installed Morgenruf before it existed have not granted it. The scope is optional, which is why the posts still go out.</p>
+            <ul>
+              <li>A workspace admin clicks <strong>Re-authorise Slack</strong> on the Celebrations page. Posts after that get the reaction.</li>
+              <li>If you're self-hosting, add <code>reactions:write</code> to your Slack app's bot scopes first (see <a href="self-hosting.html#upgrade-profile-celebrations">Upgrading to member profiles and Celebrations</a>), then re-authorise.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="faq-item" id="ts-celebrations-missing">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            Someone's birthday or anniversary was not posted
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Check the following:</p>
+            <ul>
+              <li>Celebrations is turned on, and a channel and a timezone are saved.</li>
+              <li>@Morgenruf has been invited to the celebrations channel.</li>
+              <li>The person has the date in their <a href="member-profile.html">profile</a> and has not ticked <strong>Don't celebrate me publicly</strong>.</li>
+              <li>For an anniversary, the start date is at least a year ago.</li>
+              <li>The day was not a day off. A celebration on a weekend or a listed holiday is posted on the last working day before it, so look there. The <strong>Coming up</strong> list on the Celebrations page shows which day each one is posted.</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
       <h2 id="dashboard">Dashboard Not Loading</h2>
 
       <div class="faq-list">
@@ -382,6 +428,9 @@ kubectl logs deployment/morgenruf --tail 50</code></pre>
         <li><a href="#scheduling">Scheduling</a></li>
         <li><a href="#ts-schedule-timezone" class="h3">Wrong time</a></li>
         <li><a href="#ts-schedule-missed" class="h3">Standup skipped</a></li>
+        <li><a href="#celebrations">Celebrations</a></li>
+        <li><a href="#ts-celebrations-reaction" class="h3">No 🎉 reaction</a></li>
+        <li><a href="#ts-celebrations-missing" class="h3">Not posted</a></li>
         <li><a href="#dashboard">Dashboard</a></li>
         <li><a href="#ts-dashboard-blank" class="h3">Blank page</a></li>
         <li><a href="#ts-dashboard-auth" class="h3">Permission denied</a></li>

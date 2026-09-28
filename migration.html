@@ -47,6 +47,15 @@
         <span class="nav-icon">⚙️</span> Configuration
       </a></li>
     </ul>
+    <div class="sidebar-section-label">Features</div>
+    <ul class="sidebar-nav">
+      <li><a href="member-profile.html">
+        <span class="nav-icon">🪪</span> Member Profile
+      </a></li>
+      <li><a href="celebrations.html">
+        <span class="nav-icon">🎂</span> Celebrations
+      </a></li>
+    </ul>
     <div class="sidebar-section-label">Self Hosting</div>
     <ul class="sidebar-nav">
       <li><a href="self-hosting.html">
@@ -279,6 +288,11 @@ pg_restore --clean --dbname "$DATABASE_URL" morgenruf_backup_20260405.dump</code
       </div>
 
       <h2 id="version-notes">Version-Specific Migration Notes</h2>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ️</span>
+        <p>The release with member profiles and Celebrations adds three additive migrations (<code>051_member_profiles.sql</code>, <code>053_workspace_calendar.sql</code>, <code>054_celebrations.sql</code>) that run automatically, plus two optional Slack app changes. See <a href="self-hosting.html#upgrade-profile-celebrations">Upgrading to member profiles and Celebrations</a>.</p>
+      </div>
 
       <h3 id="v1-0-0">v1.0.0 (2026-04-05)</h3>
       <p><strong>New migration:</strong> <code>015_mcp_api_keys.sql</code> — adds the <code>mcp_api_keys</code> table. No data changes; fully additive.</p>

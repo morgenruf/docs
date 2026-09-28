@@ -47,6 +47,15 @@
         <span class="nav-icon">⚙️</span> Configuration
       </a></li>
     </ul>
+    <div class="sidebar-section-label">Features</div>
+    <ul class="sidebar-nav">
+      <li><a href="member-profile.html">
+        <span class="nav-icon">🪪</span> Member Profile
+      </a></li>
+      <li><a href="celebrations.html">
+        <span class="nav-icon">🎂</span> Celebrations
+      </a></li>
+    </ul>
     <div class="sidebar-section-label">Self Hosting</div>
     <ul class="sidebar-nav">
       <li><a href="self-hosting.html">
@@ -447,6 +456,60 @@
       <h3 id="get-feed">GET /feed/&lt;token&gt;</h3>
       <p>Public read-only standup feed page. No authentication required — access is controlled by the token. Returns an HTML page with the most recent standup responses.</p>
 
+      <h3 id="get-profile">GET /dashboard/api/profile</h3>
+      <p>Returns the signed-in member's own <a href="member-profile.html">profile</a>. Any signed-in member. The user comes from the session only.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{
+  "user_id": "U012AB3CD",
+  "birth_month": 3,
+  "birth_day": 14,
+  "start_date": "2023-03-01",
+  "role": "Backend engineer",
+  "location": "Berlin",
+  "ask_me_about": "Rust, bouldering",
+  "celebrate": true,
+  "set_by_admin": false,
+  "updated_at": "2026-09-27T10:00:00Z"
+}</code></pre>
+        <span class="code-lang">json response</span>
+      </div>
+
+      <h3 id="put-profile">PUT /dashboard/api/profile</h3>
+      <p>Updates the signed-in member's own profile. Any signed-in member. Only the fields sent change. <code>birth_month</code> and <code>birth_day</code> go together; there is no year field, and an unknown key such as <code>birth_year</code> is dropped. <code>role</code> and <code>location</code> take up to 80 characters, <code>ask_me_about</code> up to 200.</p>
+
+      <h3 id="get-profiles">GET /dashboard/api/profiles</h3>
+      <p>Lists every current member's profile. Workspace admin required.</p>
+
+      <h3 id="put-profiles">PUT /dashboard/api/profiles/&lt;user_id&gt;</h3>
+      <p>Updates one member's profile. Workspace admin required. Same fields as <code>PUT /dashboard/api/profile</code>.</p>
+
+      <h3 id="post-profiles-import">POST /dashboard/api/profiles/import</h3>
+      <p>Imports birthdays and start dates from <code>email,birthday,start_date</code> CSV text. Workspace admin required. <code>preview</code> defaults to <code>true</code> and writes nothing; send <code>false</code> to save. <code>overwrite</code> replaces profiles members wrote themselves. See <a href="member-profile.html#csv-import">CSV import</a>.</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-json">{ "csv": "email,birthday,start_date\npriya@example.com,03-14,2023-03-01", "preview": true, "overwrite": false }</code></pre>
+        <span class="code-lang">json request body</span>
+      </div>
+      <p>The response counts rows as <code>ready</code>, <code>unchanged</code>, <code>kept</code>, <code>unmatched</code> and <code>invalid</code>, with <code>written</code> and a per-row list.</p>
+
+      <h3 id="celebrations-api">Celebrations endpoints</h3>
+      <p>Changes need a workspace admin or a Celebrations admin. See <a href="celebrations.html">Celebrations</a>.</p>
+      <table>
+        <thead>
+          <tr><th>Endpoint</th><th>Who</th><th>What it does</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>GET /dashboard/api/celebrations/settings</code></td><td>any member</td><td>Channel, timezone, post time, birthdays, anniversaries, working days, and whether the 🎉 can be added (<code>can_react</code>).</td></tr>
+          <tr><td><code>PUT /dashboard/api/celebrations/settings</code></td><td>admins</td><td>Saves the settings. <code>channel_id</code>, <code>timezone</code> and <code>working_days</code> (for example <code>["mon","tue","wed","thu","fri"]</code>) are required.</td></tr>
+          <tr><td><code>GET /dashboard/api/celebrations/holidays</code></td><td>any member</td><td>The holiday list.</td></tr>
+          <tr><td><code>POST /dashboard/api/celebrations/holidays</code></td><td>admins</td><td>Adds <code>{"date", "name"}</code>, or renames the holiday on that date.</td></tr>
+          <tr><td><code>DELETE /dashboard/api/celebrations/holidays/&lt;date&gt;</code></td><td>admins</td><td>Removes the holiday on a <code>YYYY-MM-DD</code> date.</td></tr>
+          <tr><td><code>POST /dashboard/api/celebrations/holidays/import</code></td><td>admins</td><td>Imports <code>date,name</code> CSV text. <code>preview</code> defaults to <code>true</code>.</td></tr>
+          <tr><td><code>GET /dashboard/api/celebrations/upcoming</code></td><td>admins</td><td>Every celebration in the next 30 days and the day it is posted.</td></tr>
+          <tr><td><code>GET /dashboard/api/celebrations/ask-dates</code></td><td>admins</td><td>How many people Ask for dates would DM, and the message. Sends nothing.</td></tr>
+          <tr><td><code>POST /dashboard/api/celebrations/ask-dates</code></td><td>admins</td><td>Sends the DM to people still missing dates, at most once per person per 30 days. Returns <code>409</code> until a channel and a timezone are saved.</td></tr>
+        </tbody>
+      </table>
+
       <hr />
 
       <h2 id="mcp-api">MCP API</h2>
@@ -666,6 +729,8 @@
         <li><a href="#get-templates" class="h3">GET /api/templates</a></li>
         <li><a href="#get-schedules" class="h3">GET /api/schedules</a></li>
         <li><a href="#get-rules" class="h3">GET /api/rules</a></li>
+        <li><a href="#get-profile" class="h3">GET /api/profile</a></li>
+        <li><a href="#celebrations-api" class="h3">Celebrations</a></li>
         <li><a href="#mcp-api">MCP API</a></li>
         <li><a href="#get-mcp" class="h3">GET /mcp</a></li>
         <li><a href="#post-mcp" class="h3">POST /mcp</a></li>

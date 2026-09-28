@@ -47,6 +47,15 @@
         <span class="nav-icon">⚙️</span> Configuration
       </a></li>
     </ul>
+    <div class="sidebar-section-label">Features</div>
+    <ul class="sidebar-nav">
+      <li><a href="member-profile.html">
+        <span class="nav-icon">🪪</span> Member Profile
+      </a></li>
+      <li><a href="celebrations.html">
+        <span class="nav-icon">🎂</span> Celebrations
+      </a></li>
+    </ul>
     <div class="sidebar-section-label">Self Hosting</div>
     <ul class="sidebar-nav">
       <li><a href="self-hosting.html" class="active">
@@ -251,6 +260,15 @@ docker compose up -d</code></pre>
       </div>
       <p>Migrations run automatically on container start. To run them manually, see the <a href="#run-migrations">Database Migrations</a> section above.</p>
 
+      <h3 id="upgrade-profile-celebrations">Upgrading to member profiles and Celebrations</h3>
+      <p>The release that adds the <a href="member-profile.html">member profile</a> and <a href="celebrations.html">Celebrations</a> needs two changes in your Slack app, both optional. Nothing else changes: no new environment variables.</p>
+      <ul>
+        <li><strong>Migrations run automatically.</strong> Three new ones, all additive: <code>051_member_profiles.sql</code> (core), <code>053_workspace_calendar.sql</code> (core, working days and holidays) and <code>054_celebrations.sql</code> (the Celebrations module).</li>
+        <li><strong>Add the <code>reactions:write</code> bot scope</strong> to your Slack app, under <strong>OAuth &amp; Permissions</strong> or by pasting the root <code>slack-manifest.yaml</code>. Celebrations uses it only for the 🎉 on its posts. Without it the posts still go out. Workspaces get the reaction after they reinstall or re-authorise.</li>
+        <li><strong>Update the <code>/morgenruf</code> slash command</strong> under <strong>Slash Commands</strong>: description <code>Your profile, and what Morgenruf can do</code>, usage hint <code>[profile | help]</code>. The command already exists and works without this change; only the hint Slack shows is new.</li>
+        <li>The stale <code>app/slack-manifest.yaml</code> and <code>app/slack-manifest.json</code> are removed. The pair at the repository root is the only manifest.</li>
+      </ul>
+
     </article>
   </main>
 
@@ -268,6 +286,7 @@ docker compose up -d</code></pre>
         <li><a href="#verify">Verify Installation</a></li>
         <li><a href="#ngrok">Local Dev with Ngrok</a></li>
         <li><a href="#upgrading">Upgrading</a></li>
+        <li><a href="#upgrade-profile-celebrations" class="h3">Profiles and Celebrations</a></li>
       </ul>
     </nav>
   </aside>

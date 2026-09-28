@@ -47,6 +47,15 @@
         <span class="nav-icon">⚙️</span> Configuration
       </a></li>
     </ul>
+    <div class="sidebar-section-label">Features</div>
+    <ul class="sidebar-nav">
+      <li><a href="member-profile.html">
+        <span class="nav-icon">🪪</span> Member Profile
+      </a></li>
+      <li><a href="celebrations.html">
+        <span class="nav-icon">🎂</span> Celebrations
+      </a></li>
+    </ul>
     <div class="sidebar-section-label">Self Hosting</div>
     <ul class="sidebar-nav">
       <li><a href="self-hosting.html">
@@ -94,7 +103,8 @@
         Morgenruf is an open-source Slack app for the rituals a distributed team runs on. It started as async
         standups: it DMs each team member with your configured questions, collects their responses, and posts
         a clean summary to your designated channel, all at a time you choose. It now also runs random coffee
-        chats, peer recognition, and the insights that need more than one of those signals at once.
+        chats, peer recognition, birthday and work anniversary celebrations, and the insights that need more
+        than one of those signals at once.
       </p>
       <p>
         The name comes from German: <em>Morgenruf</em> means "morning call." Configure everything via the
@@ -123,7 +133,7 @@
 
       <h2 id="modules">Modules</h2>
       <p>
-        Four modules over one deployment and one database. Each owns its migrations, Slack handlers,
+        Five modules over one deployment and one database. Each owns its migrations, Slack handlers,
         dashboard pages and scheduled jobs, and any of them can be switched off without touching the rest.
       </p>
       <ul class="feature-list">
@@ -136,9 +146,17 @@
         <li><strong>Kudos</strong> — <code>kudos @teammate nice work on the deploy</code>, with a daily
           allowance that resets at midnight in each person's own timezone. Leaderboards for who is recognised
           and for who does the recognising. On by default.</li>
+        <li><strong>Celebrations</strong>: birthdays and work anniversaries posted in a channel, around your
+          working days and company holidays, with a 🎉 from the bot. Off until a workspace admin turns it on.
+          See <a href="celebrations.html">Celebrations</a>.</li>
         <li><strong>Insights</strong> — the questions that need two signals: a blocker nobody has cleared in
           days, or someone who answers every standup and is thanked by nobody. On by default.</li>
       </ul>
+
+      <p>
+        Alongside the modules, every member has a short <a href="member-profile.html">member profile</a>
+        (birthday, start date, role, location, ask me about) that is part of the core and always on.
+      </p>
 
       <h2 id="quick-start">Quick Start</h2>
       <ol class="steps">
@@ -193,6 +211,16 @@
           <span class="card-icon">🔌</span>
           <h3>MCP Integration</h3>
           <p>Connect Claude, Cursor, and GitHub Copilot to your standup data.</p>
+        </a>
+        <a href="celebrations.html" class="card">
+          <span class="card-icon">🎂</span>
+          <h3>Celebrations</h3>
+          <p>Post birthdays and work anniversaries around your company calendar.</p>
+        </a>
+        <a href="member-profile.html" class="card">
+          <span class="card-icon">🪪</span>
+          <h3>Member Profile</h3>
+          <p>Birthdays, start dates and the rest, filled in by people or imported by admins.</p>
         </a>
       </div>
 

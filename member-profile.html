@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Member Profile | Morgenruf Docs</title>
+  <meta name="description" content="The Morgenruf member profile: birthday, start date, role, location, how to fill it in, CSV import of dates, who can see it, and when it is removed." />
+  <link rel="stylesheet" href="assets/docs.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-icon">M</div>
+    <span class="logo-name">Morgenruf</span>
+    <span class="logo-docs">/ Docs</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <a href="https://morgenruf.dev" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+    <span>morgenruf.dev</span>
+  </a>
+</header>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Documentation</div>
+    <ul class="sidebar-nav">
+      <li><a href="index.html">
+        <span class="nav-icon">🏠</span> Welcome
+      </a></li>
+      <li><a href="getting-started.html">
+        <span class="nav-icon">🚀</span> Getting Started
+      </a></li>
+      <li><a href="configuration.html">
+        <span class="nav-icon">⚙️</span> Configuration
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Features</div>
+    <ul class="sidebar-nav">
+      <li><a href="member-profile.html" class="active">
+        <span class="nav-icon">🪪</span> Member Profile
+      </a></li>
+      <li><a href="celebrations.html">
+        <span class="nav-icon">🎂</span> Celebrations
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Self Hosting</div>
+    <ul class="sidebar-nav">
+      <li><a href="self-hosting.html">
+        <span class="nav-icon">🐳</span> Docker
+      </a></li>
+      <li><a href="helm.html">
+        <span class="nav-icon">☸️</span> Kubernetes / Helm
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Integrations</div>
+    <ul class="sidebar-nav">
+      <li><a href="mcp.html">
+        <span class="nav-icon">🔌</span> MCP
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Reference</div>
+    <ul class="sidebar-nav">
+      <li><a href="api-reference.html">
+        <span class="nav-icon">📋</span> API Reference
+      </a></li>
+      <li><a href="migration.html">
+        <span class="nav-icon">🔄</span> Migration Guide
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Help</div>
+    <ul class="sidebar-nav">
+      <li><a href="faq.html">
+        <span class="nav-icon">💬</span> FAQ
+      </a></li>
+      <li><a href="troubleshooting.html">
+        <span class="nav-icon">🔧</span> Troubleshooting
+      </a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="docs-main">
+    <article class="docs-content">
+
+      <h1>Member Profile</h1>
+      <p class="page-subtitle">A short profile each person keeps in Morgenruf: birthday, start date, role, location and what to ask them about.</p>
+
+      <h2 id="overview">Overview</h2>
+      <p>
+        Slack has no standard birthday field, start dates exist only on some Enterprise Grid plans, and custom
+        profile fields differ from workspace to workspace. So Morgenruf keeps its own small profile for every
+        member. It is part of the core rather than a module, so it is always there and cannot be switched off.
+        <a href="celebrations.html">Celebrations</a> reads the dates from it.
+      </p>
+      <p>
+        The profile lives in its own table, separate from the member list that Morgenruf syncs from Slack, so
+        the sync never overwrites what a person typed.
+      </p>
+
+      <h2 id="fields">Fields</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>What it holds</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Birthday</strong></td>
+            <td>Day and month only. The year is never stored, from any source. 29 February is accepted, and is celebrated on 28 February in other years.</td>
+          </tr>
+          <tr>
+            <td><strong>Started on</strong></td>
+            <td>The full start date, year included, because work anniversaries count years. It can be up to a year in the future, so new hires can be entered before they start.</td>
+          </tr>
+          <tr>
+            <td><strong>Role</strong></td>
+            <td>Free text, up to 80 characters. For example <em>Backend engineer</em>.</td>
+          </tr>
+          <tr>
+            <td><strong>Location</strong></td>
+            <td>Free text, up to 80 characters. For example <em>Berlin</em>.</td>
+          </tr>
+          <tr>
+            <td><strong>Ask me about</strong></td>
+            <td>Free text, up to 200 characters. For example <em>Rust, bouldering, sourdough</em>.</td>
+          </tr>
+          <tr>
+            <td><strong>Don't celebrate me publicly</strong></td>
+            <td>A checkbox, off by default. Anyone with a date on file is celebrated unless they tick it. Ticking it keeps the dates and posts nothing.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Every field is optional. A birthday needs both the month and the day, or neither.</p>
+
+      <h2 id="edit-your-profile">Edit Your Profile</h2>
+      <p>There are three ways in. All of them open the same form and go through the same validation.</p>
+
+      <h3 id="app-home">App Home</h3>
+      <p>
+        Open Morgenruf in Slack and go to the <strong>Home</strong> tab. The <strong>Your profile</strong>
+        section has an <strong>Edit</strong> button that opens the form. Until you add anything, the section
+        reads <em>"Add your birthday and start date so the team can celebrate with you."</em> Once filled in it
+        looks like this:
+      </p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-plaintext">Your profile                                        [ Edit ]
+💼 Backend engineer   🎂 14 March   🗓️ Joined Mar 2023   📍 Berlin
+Ask me about: Rust, bouldering</code></pre>
+        <span class="code-lang">slack app home</span>
+      </div>
+      <p>
+        If an admin changed your profile last, the section says <em>"Last changed by an admin. Edit it if
+        anything is wrong."</em> If you opted out, it says <em>"You asked not to be celebrated publicly."</em>
+      </p>
+
+      <h3 id="slash-command">/morgenruf profile</h3>
+      <p>Run it from any channel or DM to open the same form:</p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-plaintext">/morgenruf profile</code></pre>
+        <span class="code-lang">slack</span>
+      </div>
+      <p>
+        After you save in Slack, the form turns into a <strong>Saved</strong> summary of what is stored. The
+        Home tab shows the change the next time you open it.
+      </p>
+
+      <h3 id="dashboard">Dashboard: My profile</h3>
+      <p>
+        Every member can sign in to the dashboard, not only admins. <strong>My profile</strong> sits in the
+        sidebar, above Sign out, and edits the same fields.
+      </p>
+
+      <h3 id="clearing">Clearing a date</h3>
+      <p>
+        You can remove your own dates at any time. In Slack, set the birthday month and day back to
+        <strong>Not set</strong>, and tick <strong>Remove my start date</strong> (it appears once a start date
+        is stored). In the dashboard, empty the fields and save.
+      </p>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ️</span>
+        <p>The App Home is drawn by the standups module. In a workspace with standups switched off there is no Home tab, so use <code>/morgenruf profile</code> or the dashboard instead.</p>
+      </div>
+
+      <h2 id="admin-editing">Admin Editing</h2>
+      <p>
+        A <strong>workspace admin</strong> can edit anyone's profile. On the <strong>Members</strong> page each
+        person's card shows their profile and an <strong>Edit profile</strong> button, and the page shows how
+        many people have dates on file. A profile an admin changed is marked as set by an admin, so the person
+        can see it and correct it.
+      </p>
+      <p>
+        Editing other people's profiles and importing dates is for workspace admins only. Feature admins,
+        including Celebrations admins, can edit only their own profile.
+      </p>
+
+      <h2 id="csv-import">Importing Dates from a CSV</h2>
+      <p>
+        The quickest way to cover a whole company is an export from your HR tool. On the
+        <strong>Members</strong> page, choose <strong>Import dates</strong>, then paste the CSV or choose a
+        file.
+      </p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-plaintext">email,birthday,start_date
+priya@example.com,03-14,2023-03-01
+tom@example.com,1990-07-04,2021-09-13</code></pre>
+        <span class="code-lang">csv</span>
+      </div>
+      <ul>
+        <li><strong>Header row required.</strong> It names the columns. Names are matched in any order and any case, and extra columns are ignored, so an export can be pasted as it comes. You need <code>email</code> plus <code>birthday</code>, <code>start_date</code> or both.</li>
+        <li><strong><code>birthday</code></strong> is <code>MM-DD</code> or a full <code>YYYY-MM-DD</code> date. The year of a full date is used only to check the day exists, then dropped. It is never stored.</li>
+        <li><strong><code>start_date</code></strong> is <code>YYYY-MM-DD</code>.</li>
+        <li><strong>Matched by email</strong> against the Slack directory, so people the bot has never messaged are matched too. If Slack cannot be reached, it falls back to the members Morgenruf already knows.</li>
+        <li><strong>A blank cell means "leave this alone"</strong>, never "clear it".</li>
+        <li><strong>The same email twice</strong> in one file makes the second row invalid.</li>
+        <li>At most 5,000 rows and 1 MB per import. Split a larger file.</li>
+      </ul>
+
+      <h3 id="import-preview">Preview before anything is written</h3>
+      <p>The first step is always a preview. Nothing is saved until you have checked it and confirmed. Each row gets one of these outcomes:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Outcome</th>
+            <th>Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Will be saved</td><td>The row matches a member and changes their dates.</td></tr>
+          <tr><td>Already on file</td><td>The profile already holds these dates.</td></tr>
+          <tr><td>Kept, set by the member</td><td>The person entered their own profile, and overwrite is off.</td></tr>
+          <tr><td>No member with this email</td><td>Nobody active in the workspace has that address.</td></tr>
+          <tr><td>Invalid</td><td>The row itself is wrong, for example a date that does not exist. The reason is shown.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 id="member-entries">Entries members made themselves</h3>
+      <p>
+        By default the import never touches a profile the person wrote themselves. The whole row is kept,
+        including fields they left empty: filling those in would mark the profile as set by an admin, and the
+        next import would then overwrite what they typed. To replace member entries anyway, tick
+        <strong>Overwrite entries members made themselves</strong> before previewing.
+      </p>
+
+      <h2 id="who-can-see">Who Can See What</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Who</th>
+            <th>What they see</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>The member</td>
+            <td>Their own profile, in the App Home, the form and <strong>My profile</strong>.</td>
+          </tr>
+          <tr>
+            <td>Workspace admins</td>
+            <td>Every current member's profile, all fields, on the Members page. Hiding birthdays from the admins who imported them would protect nothing.</td>
+          </tr>
+          <tr>
+            <td>Celebrations admins</td>
+            <td>The next 30 days of birthdays and anniversaries on the Celebrations page, and how many people are missing dates. Not the full profiles.</td>
+          </tr>
+          <tr>
+            <td>Everyone else</td>
+            <td>No one else's profile in the dashboard. In Slack, only what a <a href="celebrations.html#messages">Celebrations post</a> says: whose birthday or anniversary it is, and for an anniversary how many years.</td>
+          </tr>
+          <tr>
+            <td>MCP clients</td>
+            <td>The <code>get_member_profiles</code> tool returns current members' profiles, with birthdays as <code>MM-DD</code>, to anyone holding an MCP API key for the workspace. See <a href="mcp.html#available-tools">MCP</a>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 id="data-removal">Data Removal</h2>
+      <ul>
+        <li><strong>When someone leaves.</strong> When Morgenruf sees a person has left (they are deactivated as a member, or the six-hourly Slack sync no longer finds them), their profile is marked. A nightly job deletes profiles marked more than <strong>30 days</strong> ago.</li>
+        <li><strong>When they come back.</strong> Reactivating someone within those 30 days clears the mark, so a Slack deactivate and reactivate loses nothing. An active person's profile is never deleted.</li>
+        <li><strong>Uninstalling</strong> Morgenruf removes every profile along with the rest of the workspace's data.</li>
+        <li><strong>At any time</strong>, anyone can clear their own dates, or tick <strong>Don't celebrate me publicly</strong> to keep them and post nothing.</li>
+        <li><strong>No birth year</strong> is stored anywhere, including from a CSV import.</li>
+      </ul>
+
+    </article>
+  </main>
+
+  <!-- ON THIS PAGE -->
+  <aside class="on-this-page">
+    <div class="on-this-page-label">On this page</div>
+    <nav>
+      <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#fields">Fields</a></li>
+        <li><a href="#edit-your-profile">Edit Your Profile</a></li>
+        <li><a href="#app-home" class="h3">App Home</a></li>
+        <li><a href="#slash-command" class="h3">/morgenruf profile</a></li>
+        <li><a href="#dashboard" class="h3">My profile</a></li>
+        <li><a href="#clearing" class="h3">Clearing a date</a></li>
+        <li><a href="#admin-editing">Admin Editing</a></li>
+        <li><a href="#csv-import">CSV Import</a></li>
+        <li><a href="#import-preview" class="h3">Preview</a></li>
+        <li><a href="#member-entries" class="h3">Member entries</a></li>
+        <li><a href="#who-can-see">Who Can See What</a></li>
+        <li><a href="#data-removal">Data Removal</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+</div>
+
+<script>
+  hljs.highlightAll();
+  const btn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+  }
+  btn.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+</script>
+</body>
+</html>

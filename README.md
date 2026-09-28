@@ -13,6 +13,8 @@ This repo contains the HTML documentation for [Morgenruf](https://github.com/mor
 
 - **Getting Started** — Installation, configuration, and first standup
 - **Configuration** — All environment variables and options
+- **Member Profile**: birthdays, start dates and the rest; CSV import; data removal
+- **Celebrations**: birthdays and work anniversaries around working days and holidays
 - **Slash Commands** — Full command reference
 - **API Reference** — REST API for integrations
 - **Deployment** — Docker, Kubernetes/Helm, and cloud deployment guides
@@ -23,6 +25,8 @@ This repo contains the HTML documentation for [Morgenruf](https://github.com/mor
 - `index.html` — Home / overview
 - `getting-started.html` — Installation guide
 - `configuration.html` — Configuration reference
+- `member-profile.html`: Member profile
+- `celebrations.html`: Celebrations module
 - `self-hosting.html` — Self-hosting guide (k8s, Docker)
 - `helm.html` — Helm chart reference
 - `faq.html` — Frequently asked questions

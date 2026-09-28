@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Celebrations | Morgenruf Docs</title>
+  <meta name="description" content="Celebrations in Morgenruf: birthdays and work anniversaries posted in Slack around your working days and company holidays." />
+  <link rel="stylesheet" href="assets/docs.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+    <span></span><span></span><span></span>
+  </button>
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-icon">M</div>
+    <span class="logo-name">Morgenruf</span>
+    <span class="logo-docs">/ Docs</span>
+  </a>
+  <div class="topbar-spacer"></div>
+  <a href="https://morgenruf.dev" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12L6 8l4-4"/></svg>
+    <span>morgenruf.dev</span>
+  </a>
+</header>
+
+<div class="docs-layout">
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Documentation</div>
+    <ul class="sidebar-nav">
+      <li><a href="index.html">
+        <span class="nav-icon">🏠</span> Welcome
+      </a></li>
+      <li><a href="getting-started.html">
+        <span class="nav-icon">🚀</span> Getting Started
+      </a></li>
+      <li><a href="configuration.html">
+        <span class="nav-icon">⚙️</span> Configuration
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Features</div>
+    <ul class="sidebar-nav">
+      <li><a href="member-profile.html">
+        <span class="nav-icon">🪪</span> Member Profile
+      </a></li>
+      <li><a href="celebrations.html" class="active">
+        <span class="nav-icon">🎂</span> Celebrations
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Self Hosting</div>
+    <ul class="sidebar-nav">
+      <li><a href="self-hosting.html">
+        <span class="nav-icon">🐳</span> Docker
+      </a></li>
+      <li><a href="helm.html">
+        <span class="nav-icon">☸️</span> Kubernetes / Helm
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Integrations</div>
+    <ul class="sidebar-nav">
+      <li><a href="mcp.html">
+        <span class="nav-icon">🔌</span> MCP
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Reference</div>
+    <ul class="sidebar-nav">
+      <li><a href="api-reference.html">
+        <span class="nav-icon">📋</span> API Reference
+      </a></li>
+      <li><a href="migration.html">
+        <span class="nav-icon">🔄</span> Migration Guide
+      </a></li>
+    </ul>
+    <div class="sidebar-section-label">Help</div>
+    <ul class="sidebar-nav">
+      <li><a href="faq.html">
+        <span class="nav-icon">💬</span> FAQ
+      </a></li>
+      <li><a href="troubleshooting.html">
+        <span class="nav-icon">🔧</span> Troubleshooting
+      </a></li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="docs-main">
+    <article class="docs-content">
+
+      <h1>Celebrations</h1>
+      <p class="page-subtitle">Birthdays and work anniversaries, posted in a Slack channel on your company's working days.</p>
+
+      <h2 id="overview">Overview</h2>
+      <p>
+        Celebrations is a module. It reads birthdays and start dates from the <a href="member-profile.html">member
+        profile</a>, and once a day it posts whoever is celebrating in a channel you choose, with a 🎉 from the bot
+        so people pile on. It plans around your working week and your company's holiday list, so nothing is
+        posted on a day nobody is around to see it.
+      </p>
+      <p>It is <strong>off by default</strong>. A workspace admin turns it on.</p>
+
+      <h2 id="turn-on">Turning It On</h2>
+      <ol class="steps">
+        <li>
+          <div class="step-content">
+            <h3>Open the Celebrations page</h3>
+            <p>In the dashboard, <strong>Celebrations</strong> is in the sidebar after Kudos. You can set everything up while the module is still off.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Pick a channel and a timezone, then save</h3>
+            <p>Both are required. The other settings have defaults (see <a href="#settings">Settings</a>).</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Invite the bot to that channel</h3>
+            <div class="code-block-wrapper">
+              <pre><code class="language-plaintext">/invite @Morgenruf</code></pre>
+              <span class="code-lang">slack</span>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="step-content">
+            <h3>Turn on celebrations</h3>
+            <p>A workspace admin clicks <strong>Turn on celebrations</strong>. The button is enabled once a channel and a timezone are saved.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ️</span>
+        <p>Once it is on, Morgenruf also sends one DM to each person with no dates on file, asking for them. See <a href="#asking-for-dates">Asking for dates</a>.</p>
+      </div>
+
+      <h3 id="celebrations-admin">Letting HR run it</h3>
+      <p>
+        Celebrations can be delegated. A workspace admin gives someone the <strong>Celebrations</strong> grant
+        from the <strong>Members</strong> page, and that person can look after it without being a workspace
+        admin. The grant is offered once Celebrations is on, because Members lists grants for active features
+        only.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Workspace admin</th>
+            <th>Celebrations admin</th>
+            <th>Member</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Turn Celebrations on or off</td><td>yes</td><td>no</td><td>no</td></tr>
+          <tr><td>Change settings, working days and holidays</td><td>yes</td><td>yes</td><td>no</td></tr>
+          <tr><td>See the next 30 days of celebrations</td><td>yes</td><td>yes</td><td>no</td></tr>
+          <tr><td>Ask for dates</td><td>yes</td><td>yes</td><td>no</td></tr>
+          <tr><td>Read settings and holidays</td><td>yes</td><td>yes</td><td>yes</td></tr>
+          <tr><td>Edit other people's profiles, import dates</td><td>yes</td><td>no</td><td>no</td></tr>
+        </tbody>
+      </table>
+      <p>A Celebrations admin who sets it up sees a note to ask a workspace admin to turn it on.</p>
+
+      <h2 id="settings">Settings</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Setting</th>
+            <th>Default</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Channel</strong></td>
+            <td>none</td>
+            <td>Required. Where the posts go. Invite @Morgenruf to it.</td>
+          </tr>
+          <tr>
+            <td><strong>Timezone</strong></td>
+            <td>none</td>
+            <td>Required. The clock your company celebrates on. Separate from any standup's timezone, because the people who run standups and the people who run celebrations are often different.</td>
+          </tr>
+          <tr>
+            <td><strong>Post at</strong></td>
+            <td><code>09:00</code></td>
+            <td>24-hour time in the Celebrations timezone.</td>
+          </tr>
+          <tr>
+            <td><strong>Working days</strong></td>
+            <td>Monday to Friday</td>
+            <td>Any set of days, at least one. For example Sunday to Thursday.</td>
+          </tr>
+          <tr>
+            <td><strong>Celebrate birthdays</strong></td>
+            <td>on</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><strong>Celebrate work anniversaries</strong></td>
+            <td>on</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><strong>Holidays</strong></td>
+            <td>empty</td>
+            <td>Your company's days off. See below.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        The page also shows <strong>Coming up</strong>: every celebration in the next 30 days and the day each
+        one will be posted. Only workspace admins and Celebrations admins see it, since it lists birthdays.
+      </p>
+
+      <h3 id="holidays">Holidays</h3>
+      <p>
+        Morgenruf does not ship a holiday calendar. Your company's own list is the only source. Add holidays one
+        at a time (adding a date that is already listed renames it), remove them, or import a list:
+      </p>
+      <div class="code-block-wrapper">
+        <pre><code class="language-plaintext">date,name
+2026-12-24,Christmas Eve
+2026-12-25,Christmas Day
+2026-12-26,Boxing Day</code></pre>
+        <span class="code-lang">csv</span>
+      </div>
+      <ul>
+        <li>One <code>date,name</code> per line. The <code>date,name</code> header is optional.</li>
+        <li>Dates are <code>YYYY-MM-DD</code>. Names are required, up to 80 characters.</li>
+        <li>The same date twice in one file makes the second line invalid.</li>
+        <li>Dates more than a year in the past are refused. At most 1,000 lines per import.</li>
+        <li>The import shows a preview first and saves nothing until you confirm.</li>
+      </ul>
+      <p>
+        Working days and holidays belong to the workspace, not to Celebrations alone, so later features can
+        plan around the same calendar. For now they are edited from the Celebrations page. Holidays more than a
+        year old are removed by a nightly job.
+      </p>
+
+      <h2 id="how-posting-works">How Posting Works</h2>
+      <p>Once a day, at the post time in the Celebrations timezone, and only on working days:</p>
+      <ol>
+        <li>Morgenruf collects everyone with a birthday or a work anniversary on that day, or on any day off between it and the next working day.</li>
+        <li>It skips anyone who ticked <strong>Don't celebrate me publicly</strong>, anyone deactivated, and anyone who has left.</li>
+        <li>It skips start dates less than a year ago, and start dates in the future.</li>
+        <li>It posts one message per kind per day: all of that day's birthdays together, and all of its anniversaries together. Then it adds a 🎉 to each post.</li>
+      </ol>
+      <p>
+        29 February birthdays and start dates are celebrated on 28 February in years without one. Names are
+        mentions, listed alphabetically by first name.
+      </p>
+
+      <h3 id="days-off">Weekends and holidays</h3>
+      <p>
+        A celebration that falls on a day off (outside the working days, or on a listed holiday) is posted on
+        the <strong>last working day before it</strong>, as its own message. With Monday to Friday working days:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Celebration on</th>
+            <th>Posted on</th>
+            <th>Opens with</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Saturday</td><td>Friday</td><td>"Tomorrow is..."</td></tr>
+          <tr><td>Sunday</td><td>Friday</td><td>"On Sunday it's..."</td></tr>
+          <tr><td>Monday, a listed holiday</td><td>Friday</td><td>"On Monday it's..."</td></tr>
+          <tr><td>25 December, with 24 to 26 December all listed as holidays on weekdays</td><td>23 December</td><td>"On 25 December it's..."</td></tr>
+        </tbody>
+      </table>
+      <p>The exact rule for the opening words:</p>
+      <ul>
+        <li>The next day is <strong>"Tomorrow is"</strong>.</li>
+        <li>A day outside the working week, or a holiday straight after one (a long weekend's Monday), is named by weekday: <strong>"On Sunday it's"</strong>, <strong>"On Monday it's"</strong>.</li>
+        <li>Any other holiday is named by date: <strong>"On 25 December it's"</strong>.</li>
+        <li>Anything seven or more days away is always named by date.</li>
+      </ul>
+      <p>
+        The second line of an early post is <strong>"Off for the weekend, so let's celebrate early."</strong>,
+        or <strong>"It's a day off, so let's celebrate early."</strong> when the day is a listed holiday.
+      </p>
+
+      <h3 id="catch-up">Catch-up and no double posts</h3>
+      <p>
+        The daily job fires at the post time and then once an hour for up to 8 more hours, always on the same day, so
+        a server that was down at post time still posts that day. Each post is recorded in the database before
+        it is sent, which makes every later firing a no-op: a restart, a later firing or a second pod never
+        posts the same celebration twice.
+      </p>
+      <p>
+        If Slack refuses a post, the record is released and the next hourly firing tries again. A post Slack
+        accepted is never sent a second time.
+      </p>
+
+      <h2 id="reaction">The 🎉 Reaction</h2>
+      <p>
+        After each post the bot adds a 🎉 so people pile on. That needs the <code>reactions:write</code> Slack
+        scope. The scope is optional: without it the post still goes out, just without the reaction, and no
+        workspace is forced to reinstall.
+      </p>
+      <p>
+        A workspace that installed Morgenruf before this scope existed does not have it. The Celebrations page
+        says so (<em>"Posts go out without the 🎉 reaction until Slack is re-authorised"</em>) and shows a
+        <strong>Re-authorise Slack</strong> link to workspace admins. After re-authorising, posts get the
+        reaction. A reaction that fails is logged and never costs the post.
+      </p>
+
+      <h2 id="asking-for-dates">Asking for Dates</h2>
+      <p>Most people will not open their profile on their own, so Celebrations asks them with a DM:</p>
+
+      <div class="slack-chat">
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">9:00 AM</span></div>
+            <div class="slack-text">👋 Hi Priya! Your team celebrates birthdays and work anniversaries in <span class="text-accent">#celebrations</span>.<br><br>Add yours so nobody misses it. Only day and month are kept.<br><br><strong>[ Add my dates ]</strong> &nbsp; <strong>[ Skip me ]</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <ul>
+        <li><strong>Add my dates</strong> opens the profile form.</li>
+        <li><strong>Skip me</strong> turns off public celebration for that person (any dates they have stay) and replaces the DM with <em>"Got it. You will not be celebrated publicly. Change your mind any time with <code>/morgenruf profile</code>."</em></li>
+      </ul>
+      <p>
+        Only active people in the Slack directory with <strong>no birthday and no start date</strong>, who have
+        not opted out, are asked. Bots are never asked. A DM that cannot be delivered is not retried.
+      </p>
+
+      <h3 id="one-time-dm">The one-time DM</h3>
+      <p>
+        With Celebrations on, the daily job sends the DM once to everyone still missing dates, including people
+        who join the workspace later. It goes out with the first daily run, so on a working day at the post
+        time, 100 people per firing; the rest follow on the next hourly firings. Nobody gets this DM twice.
+      </p>
+
+      <h3 id="ask-button">The Ask for dates button</h3>
+      <p>
+        <strong>Ask for dates</strong> is on the Celebrations page, and on the Members page while Celebrations
+        is on. It shows how many people would be asked and the message they would get before sending anything.
+        It DMs only people still missing dates, and reaches each person at most <strong>once every 30
+        days</strong> (the one-time DM counts). It needs a channel and a timezone saved first.
+      </p>
+
+      <h3 id="channel-join">Joining the channel</h3>
+      <p>
+        When someone joins the celebrations channel and has no dates on file, they get the same DM, under the
+        same 30 day limit, however often they leave and rejoin.
+      </p>
+
+      <h2 id="messages">Message Examples</h2>
+      <p>The text is fixed in this version and is not customisable. Posts never use pronouns, since the profile does not store them.</p>
+
+      <div class="slack-chat">
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">9:00 AM</span></div>
+            <div class="slack-text">🎂 Today is <span class="text-accent">@Priya</span>'s birthday!<br>Wishing you a lovely day, Priya. 💛</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">9:00 AM</span></div>
+            <div class="slack-text">🎂 Today is a birthday double: <span class="text-accent">@Priya</span> and <span class="text-accent">@Tom</span>!<br>Wishing you both a lovely day. 💛</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">9:00 AM</span></div>
+            <div class="slack-text">🎂 Today is the birthday of <span class="text-accent">@Ana</span>, <span class="text-accent">@Priya</span> and <span class="text-accent">@Tom</span>!<br>Happy birthday to all of you. 💛</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">Fri 9:00 AM</span></div>
+            <div class="slack-text">🎂 Tomorrow is <span class="text-accent">@Priya</span>'s birthday!<br>Off for the weekend, so let's celebrate early. 🎈</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">Fri 9:00 AM</span></div>
+            <div class="slack-text">🎂 On Monday it's <span class="text-accent">@Priya</span>'s birthday!<br>It's a day off, so let's celebrate early. 🎈</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">9:00 AM</span></div>
+            <div class="slack-text">🎉 Today is <span class="text-accent">@Tom</span>'s 3-year work anniversary!<br>Thanks for three great years, Tom. 🙌</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">9:00 AM</span></div>
+            <div class="slack-text">🎉 Today is <span class="text-accent">@Tom</span>'s first work anniversary! 🥳<br>One year already. Thanks for everything, Tom.</div>
+          </div>
+        </div>
+        <div class="slack-message">
+          <div class="slack-avatar bot">M</div>
+          <div class="slack-body">
+            <div class="slack-meta"><span class="slack-name bot-name">Morgenruf</span><span class="slack-time">9:00 AM</span></div>
+            <div class="slack-text">🎉 Today is a work anniversary double: <span class="text-accent">@Priya</span> (2 years) and <span class="text-accent">@Tom</span> (5 years)!<br>Thanks to you both for everything. 🙌</div>
+          </div>
+        </div>
+      </div>
+
+      <p>
+        An early post for three or more birthdays ends <em>"...so let's celebrate early. Happy birthday to all
+        of you. 🎈"</em>. Three or more anniversaries read <em>"the work anniversary of @Ana (1 year), @Priya
+        (2 years) and @Tom (5 years)"</em> and end <em>"Thanks to all of you for everything. 🙌"</em>
+      </p>
+
+    </article>
+  </main>
+
+  <!-- ON THIS PAGE -->
+  <aside class="on-this-page">
+    <div class="on-this-page-label">On this page</div>
+    <nav>
+      <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#turn-on">Turning It On</a></li>
+        <li><a href="#celebrations-admin" class="h3">Letting HR run it</a></li>
+        <li><a href="#settings">Settings</a></li>
+        <li><a href="#holidays" class="h3">Holidays</a></li>
+        <li><a href="#how-posting-works">How Posting Works</a></li>
+        <li><a href="#days-off" class="h3">Weekends and holidays</a></li>
+        <li><a href="#catch-up" class="h3">Catch-up</a></li>
+        <li><a href="#reaction">The 🎉 Reaction</a></li>
+        <li><a href="#asking-for-dates">Asking for Dates</a></li>
+        <li><a href="#one-time-dm" class="h3">One-time DM</a></li>
+        <li><a href="#ask-button" class="h3">Ask for dates button</a></li>
+        <li><a href="#channel-join" class="h3">Joining the channel</a></li>
+        <li><a href="#messages">Message Examples</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+</div>
+
+<script>
+  hljs.highlightAll();
+  const btn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('visible');
+  }
+  btn.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+</script>
+</body>
+</html>

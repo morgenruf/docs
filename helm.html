@@ -47,6 +47,15 @@
         <span class="nav-icon">⚙️</span> Configuration
       </a></li>
     </ul>
+    <div class="sidebar-section-label">Features</div>
+    <ul class="sidebar-nav">
+      <li><a href="member-profile.html">
+        <span class="nav-icon">🪪</span> Member Profile
+      </a></li>
+      <li><a href="celebrations.html">
+        <span class="nav-icon">🎂</span> Celebrations
+      </a></li>
+    </ul>
     <div class="sidebar-section-label">Self Hosting</div>
     <ul class="sidebar-nav">
       <li><a href="self-hosting.html">
@@ -343,6 +352,11 @@ helm upgrade morgenruf morgenruf/morgenruf \
         <span class="code-lang">bash</span>
       </div>
       <p>Helm will perform a rolling update, keeping at least one pod available during the transition.</p>
+
+      <div class="callout info">
+        <span class="callout-icon">ℹ️</span>
+        <p>Upgrading to the release with member profiles and Celebrations? Migrations run on their own, but your Slack app needs the optional <code>reactions:write</code> scope and a new <code>/morgenruf</code> usage hint. See <a href="self-hosting.html#upgrade-profile-celebrations">Upgrading to member profiles and Celebrations</a>.</p>
+      </div>
 
       <h2 id="uninstall">Uninstall</h2>
       <p>To remove Morgenruf from your cluster:</p>

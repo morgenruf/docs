@@ -47,6 +47,15 @@
         <span class="nav-icon">⚙️</span> Configuration
       </a></li>
     </ul>
+    <div class="sidebar-section-label">Features</div>
+    <ul class="sidebar-nav">
+      <li><a href="member-profile.html">
+        <span class="nav-icon">🪪</span> Member Profile
+      </a></li>
+      <li><a href="celebrations.html">
+        <span class="nav-icon">🎂</span> Celebrations
+      </a></li>
+    </ul>
     <div class="sidebar-section-label">Self Hosting</div>
     <ul class="sidebar-nav">
       <li><a href="self-hosting.html">
@@ -205,6 +214,17 @@
               <li>Morgenruf will detect the app_uninstalled event and delete all workspace data (configuration, standup responses, tokens) within 24 hours.</li>
             </ol>
             <p>For immediate deletion or questions, email <a href="mailto:privacy@morgenruf.dev">privacy@morgenruf.dev</a>.</p>
+          </div>
+        </div>
+
+        <div class="faq-item" id="faq-birthdays">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            What does Morgenruf keep about my birthday and start date?
+            <span class="faq-chevron">▼</span>
+          </div>
+          <div class="faq-answer">
+            <p>Only the day and month of your birthday, never the year, even when an admin imports a full date. Your start date keeps its year, because work anniversaries count years.</p>
+            <p>You can clear either date at any time with <code>/morgenruf profile</code>, or tick <strong>Don't celebrate me publicly</strong> to keep them and have nothing posted. Your profile is deleted 30 days after you leave the workspace, and everything is removed if Morgenruf is uninstalled. See <a href="member-profile.html">Member Profile</a>.</p>
           </div>
         </div>
 
@@ -368,6 +388,7 @@
         <li><a href="#faq-timezones" class="h3">Timezones</a></li>
         <li><a href="#privacy">Privacy &amp; Data</a></li>
         <li><a href="#faq-delete" class="h3">Delete data</a></li>
+        <li><a href="#faq-birthdays" class="h3">Birthdays and start dates</a></li>
         <li><a href="#customization">Customization</a></li>
         <li><a href="#faq-questions" class="h3">Custom questions</a></li>
         <li><a href="#faq-community" class="h3">Community</a></li>

@@ -47,6 +47,15 @@
         <span class="nav-icon">⚙️</span> Configuration
       </a></li>
     </ul>
+    <div class="sidebar-section-label">Features</div>
+    <ul class="sidebar-nav">
+      <li><a href="member-profile.html">
+        <span class="nav-icon">🪪</span> Member Profile
+      </a></li>
+      <li><a href="celebrations.html">
+        <span class="nav-icon">🎂</span> Celebrations
+      </a></li>
+    </ul>
     <div class="sidebar-section-label">Self Hosting</div>
     <ul class="sidebar-nav">
       <li><a href="self-hosting.html">
@@ -116,7 +125,7 @@
       </div>
 
       <h2 id="available-tools">Available Tools</h2>
-      <p>The Morgenruf MCP server exposes 17 tools to AI assistants. The standup tools are always available; the rest appear only for workspaces that have the matching module switched on, so <code>tools/list</code> reflects what your workspace actually runs.</p>
+      <p>The Morgenruf MCP server exposes 18 tools to AI assistants. The standup and member profile tools are always available; the rest appear only for workspaces that have the matching module switched on, so <code>tools/list</code> reflects what your workspace actually runs.</p>
       <h3>Standups</h3>
 
       <table class="docs-table">
@@ -167,6 +176,20 @@
             <td><code>get_mood_summary</code></td>
             <td>Team mood trends over time</td>
             <td><code>team_id</code>, <code>days</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Member profiles</h3>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Tool</th><th>Description</th><th>Parameters</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>get_member_profiles</code></td>
+            <td>Read only. What current members say about themselves: role, location, ask me about, birthday as <code>MM-DD</code> (never a year), start date, and whether they may be celebrated. People who have left are not included. See <a href="member-profile.html">Member Profile</a>.</td>
+            <td><code>user_id</code> (optional)</td>
           </tr>
         </tbody>
       </table>

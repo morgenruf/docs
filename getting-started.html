@@ -47,6 +47,15 @@
         <span class="nav-icon">⚙️</span> Configuration
       </a></li>
     </ul>
+    <div class="sidebar-section-label">Features</div>
+    <ul class="sidebar-nav">
+      <li><a href="member-profile.html">
+        <span class="nav-icon">🪪</span> Member Profile
+      </a></li>
+      <li><a href="celebrations.html">
+        <span class="nav-icon">🎂</span> Celebrations
+      </a></li>
+    </ul>
     <div class="sidebar-section-label">Self Hosting</div>
     <ul class="sidebar-nav">
       <li><a href="self-hosting.html">
@@ -239,8 +248,8 @@
       </div>
 
       <h2 id="turn-on-more">Turn On the Rest</h2>
-      <p>Standups are on from the start. Two more modules are a switch away in
-      the dashboard, and one needs a scope you may not have granted yet.</p>
+      <p>Standups are on from the start. The other modules are a switch away in
+      the dashboard, and two of them use Slack scopes you may not have granted yet.</p>
 
       <h3>Kudos</h3>
       <p>On by default. Anyone can DM the bot
@@ -293,6 +302,18 @@
       so nobody sits out. Three days later the bot nudges pairs who have not
       met, and on day six it asks whether they did. That answer is what the
       attendance view on the Coffee chats page is built from.</p>
+
+      <h3>Celebrations</h3>
+      <p>Off until a workspace admin turns it on. Birthdays and work
+      anniversaries come from each person's <a href="member-profile.html">member
+      profile</a>, which people fill in with <code>/morgenruf profile</code> and
+      admins can import from a CSV. On the Celebrations page, pick a channel and
+      a timezone, save, invite @Morgenruf to the channel, then click
+      <strong>Turn on celebrations</strong>.</p>
+      <p>The 🎉 the bot adds to each post needs <code>reactions:write</code>. It
+      is optional: without it the posts still go out, and a workspace that
+      installed before the scope existed gets the reaction after an admin
+      re-authorises Slack. See <a href="celebrations.html">Celebrations</a>.</p>
 
       <h2 id="self-hosting">Prefer to Self-Host?</h2>
       <p>If you'd rather run Morgenruf on your own infrastructure, check out the dedicated guides:</p>

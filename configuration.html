@@ -47,6 +47,15 @@
         <span class="nav-icon">⚙️</span> Configuration
       </a></li>
     </ul>
+    <div class="sidebar-section-label">Features</div>
+    <ul class="sidebar-nav">
+      <li><a href="member-profile.html">
+        <span class="nav-icon">🪪</span> Member Profile
+      </a></li>
+      <li><a href="celebrations.html">
+        <span class="nav-icon">🎂</span> Celebrations
+      </a></li>
+    </ul>
     <div class="sidebar-section-label">Self Hosting</div>
     <ul class="sidebar-nav">
       <li><a href="self-hosting.html">
@@ -235,6 +244,38 @@
         </div>
       </div>
 
+      <h2 id="slash-commands">Slash Commands</h2>
+      <p>
+        <code>/morgenruf</code> is the product's own command. It takes a subcommand, and works in any channel or DM.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Command</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>/morgenruf profile</code></td>
+            <td>Open your <a href="member-profile.html">member profile</a>: birthday, start date, role, location and what to ask you about.</td>
+          </tr>
+          <tr>
+            <td><code>/morgenruf help</code></td>
+            <td>DM you what Morgenruf can do in this workspace. It lists commands only for the features that are switched on.</td>
+          </tr>
+          <tr>
+            <td><code>/morgenruf</code></td>
+            <td>The same as <code>/morgenruf help</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        An unknown subcommand gets <em>"I don't know <code>x</code>. Here is what I can do:"</em> followed by the help.
+        The standup and kudos commands (<code>/standup</code>, <code>/skip</code>, <code>/kudos</code> and their
+        <code>/morgenruf-standup</code>, <code>/morgenruf-skip</code>, <code>/morgenruf-kudos</code> forms) are unchanged.
+      </p>
+
       <h2 id="analytics">Analytics &amp; Export</h2>
       <p>
         The <strong>Analytics</strong> tab in the dashboard shows a per-member participation table.
@@ -377,6 +418,7 @@
         <li><a href="#members" class="h3">Members</a></li>
         <li><a href="#edit-window" class="h3">Edit window</a></li>
         <li><a href="#dm-commands">DM Commands</a></li>
+        <li><a href="#slash-commands">Slash Commands</a></li>
         <li><a href="#analytics">Analytics &amp; Export</a></li>
         <li><a href="#webhooks">Webhooks</a></li>
         <li><a href="#weekly-digest">Weekly Digest Email</a></li>

@@ -30,6 +30,11 @@ This repo contains the HTML documentation for [Morgenruf](https://github.com/mor
 - `self-hosting.html` — Self-hosting guide (k8s, Docker)
 - `helm.html` — Helm chart reference
 - `faq.html` — Frequently asked questions
+- `robots.txt` and `sitemap.xml`: for search engines
+
+When you add a page, give its `<head>` a canonical link to its own URL
+(`<link rel="canonical" href="https://docs.morgenruf.dev/<page>.html" />`)
+and add it to `sitemap.xml`.
 
 ## Local Development
 

@@ -103,7 +103,7 @@
       <p>
         The <strong>Model Context Protocol (MCP)</strong> is an open standard that lets AI assistants — including
         Claude, Cursor, and GitHub Copilot — query external data sources directly during a conversation.
-        Morgenruf ships a built-in MCP server that exposes your standups, coffee chats, kudos and insights to any compatible AI tool.
+        Morgenruf ships a built-in MCP server that exposes your standups, coffee chats, kudos, insights, polls, pulse, celebrations and watercooler to any compatible AI tool.
       </p>
       <p>
         Once configured, you can ask your AI assistant questions like:
@@ -126,7 +126,7 @@
       </div>
 
       <h2 id="available-tools">Available Tools</h2>
-      <p>The Morgenruf MCP server exposes 18 tools to AI assistants. The standup and member profile tools are always available; the rest appear only for workspaces that have the matching module switched on, so <code>tools/list</code> reflects what your workspace actually runs.</p>
+      <p>The Morgenruf MCP server exposes 25 tools to AI assistants. The standup and member profile tools are always available; the rest appear only for workspaces that have the matching module switched on, so <code>tools/list</code> reflects what your workspace actually runs.</p>
       <h3>Standups</h3>
 
       <table class="docs-table">
@@ -263,6 +263,77 @@
             <td><code>get_unrecognised_contributors</code></td>
             <td>People who answer standup consistently and have received no kudos at all</td>
             <td><code>days</code>, <code>min_standups</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Polls</h3>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Tool</th><th>Description</th><th>Parameters</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>list_polls</code></td>
+            <td>Polls started in the window: question, channel, who started it, open or closed, total votes, anonymous or named</td>
+            <td><code>days</code>, <code>limit</code></td>
+          </tr>
+          <tr>
+            <td><code>get_poll_results</code></td>
+            <td>Votes and percentage per option, plus who picked what on a named poll. Anonymous polls return counts only; a poll hiding its results returns no counts until it closes</td>
+            <td><code>poll_id</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Pulse</h3>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Tool</th><th>Description</th><th>Parameters</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>list_pulse_surveys</code></td>
+            <td>The weekly pulse: schedule, questions (mood 1 to 5, eNPS 0 to 10 every fourth round), last sent, response rate</td>
+            <td>none</td>
+          </tr>
+          <tr>
+            <td><code>get_pulse_results</code></td>
+            <td>Team results per closed round. Under 5 respondents only the date and counts; the mood breakdown and eNPS from 10. No names and no text, ever</td>
+            <td><code>days</code>, <code>limit</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Celebrations</h3>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Tool</th><th>Description</th><th>Parameters</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>get_upcoming_celebrations</code></td>
+            <td>Birthdays (never the birth year) and work anniversaries coming up, with the day each will be posted and whether it has been</td>
+            <td><code>days</code>, <code>limit</code></td>
+          </tr>
+          <tr>
+            <td><code>get_celebration_history</code></td>
+            <td>Birthday and anniversary posts in the window, with who was celebrated</td>
+            <td><code>days</code>, <code>limit</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Watercooler</h3>
+      <table class="docs-table">
+        <thead>
+          <tr><th>Tool</th><th>Description</th><th>Parameters</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>list_watercooler_topics</code></td>
+            <td>Questions posted in the window, with channel, day and category. Morgenruf cannot read thread replies, so there are no reply counts</td>
+            <td><code>days</code>, <code>limit</code></td>
           </tr>
         </tbody>
       </table>

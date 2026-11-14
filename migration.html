@@ -224,7 +224,8 @@ curl https://yourapp.example.com/healthz</code></pre>
       <p>For Kubernetes / Helm:</p>
 
       <div class="code-block-wrapper">
-        <pre><code class="language-bash">helm upgrade morgenruf ./helm/morgenruf \
+        <pre><code class="language-bash">helm repo update
+helm upgrade morgenruf morgenruf/morgenruf \
   --set image.tag=1.0.0 \
   --reuse-values</code></pre>
         <span class="code-lang">bash</span>

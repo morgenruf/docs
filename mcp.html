@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MCP Integration — Morgenruf Docs</title>
-  <meta name="description" content="Connect Claude, Cursor, and GitHub Copilot to your Morgenruf standup data using the Model Context Protocol." />
+  <title>Morgenruf MCP Server: Standup Data in Claude and Cursor</title>
+  <meta name="description" content="Set up the Morgenruf MCP server so Claude Desktop, Cursor and GitHub Copilot can read your Slack standups, blockers, kudos and polls. 25 tools, runs locally." />
   <link rel="canonical" href="https://docs.morgenruf.dev/mcp.html" />
   <link rel="stylesheet" href="assets/docs.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
@@ -96,13 +96,20 @@
   <main class="docs-main">
     <article class="docs-content">
 
-      <h1>MCP Integration</h1>
-      <p class="page-subtitle">Connect Claude, Cursor, and GitHub Copilot to your standup data using the Model Context Protocol.</p>
+      <h1>Morgenruf MCP Server</h1>
+      <p class="page-subtitle">Connect Claude, Cursor and GitHub Copilot to your Morgenruf standup data using the Model Context Protocol.</p>
+      <p>
+        <a href="https://morgenruf.dev">Morgenruf</a> is an open-source Slack standup bot. This page covers its MCP server:
+        a small Python process that gives your AI assistant read access to the standups, blockers, kudos, polls and other
+        data your team has posted in Slack. It runs on your own machine against your Morgenruf PostgreSQL database.
+        Setup takes a few minutes: find your <a href="#find-team-id">Team ID</a>, then follow the steps for
+        <a href="#setup-claude">Claude Desktop</a>, <a href="#setup-cursor">Cursor</a> or <a href="#setup-copilot">GitHub Copilot</a>.
+      </p>
 
       <h2 id="what-is-mcp">What is MCP?</h2>
       <p>
-        The <strong>Model Context Protocol (MCP)</strong> is an open standard that lets AI assistants — including
-        Claude, Cursor, and GitHub Copilot — query external data sources directly during a conversation.
+        The <strong>Model Context Protocol (MCP)</strong> is an open standard that lets AI assistants (including
+        Claude, Cursor, and GitHub Copilot) query external data sources directly during a conversation.
         Morgenruf ships a built-in MCP server that exposes your standups, coffee chats, kudos, insights, polls, pulse, celebrations and watercooler to any compatible AI tool.
       </p>
       <p>
@@ -116,7 +123,7 @@
       </ul>
       <p>
         The AI will call the Morgenruf MCP tools behind the scenes and return answers grounded in your real
-        standup history — no copy-pasting, no manual context.
+        standup history, with no copy-pasting, no manual context.
       </p>
 
       <div class="callout info">
